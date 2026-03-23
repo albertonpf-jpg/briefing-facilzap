@@ -1871,6 +1871,15 @@ function adminLogin() {
 
 
 
+const widgetLabels = {
+  barra_marquee:'Barra Animada', carrossel_video:'Vídeos Stories', stories:'Stories / Destaques',
+  compre_tamanho:'Compre por Tamanho', compre_marca:'Compre por Marca', selos_confianca:'Selos de Confiança',
+  cupom_copiavel:'Cupom Copiável', depoimentos:'Depoimentos', barra_beneficios:'Barra de Benefícios',
+  brinde_auto:'Brinde Automático', promo_relampago:'Promo Relâmpago', links_rapidos:'Links Rápidos',
+  instagram_feed:'Seção Instagram', newsletter:'Newsletter', audio_boasvindas:'Áudio de Boas-vindas',
+  popup_cupom:'Pop-up Cupom', calculadora:'Calculadora', boas_vindas:'Card Boas-vindas'
+};
+
 // ── ADMIN RENDER COM MOCKUPS VISUAIS ──
 
 // Mini HTML de cada widget (igual ao formulário)
@@ -1956,8 +1965,9 @@ function renderAdmin() {
   }
 
   list.innerHTML = briefings.map(function(item) {
-    var b = item.data;
-    var dt = new Date(b.timestamp);
+    // Compatibilidade: suporta { data: {...} } e direto { loja_nome: ... }
+    var b = item.data || item;
+    var dt = new Date(b.timestamp || item.timestamp || Date.now());
     var dtStr = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     var rc = redesignConfig[b.redesign] || { label: b.redesign||'—', color:'#7c7a8e' };
 
