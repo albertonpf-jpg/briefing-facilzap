@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing de Personalização — Planned Mídia × FácilZap</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0c14;
+  --surface: #16131f;
+  --card: #1e1a2b;
+  --border: rgba(255,255,255,0.07);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.12);
+  --purple-glow: rgba(168,85,247,0.25);
+  --text: #f0ecff;
+  --muted: #7c7a8e;
+  --accent: #c084fc;
+  --green: #34d399;
+  --r: 14px;
+  --r-sm: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: #0e0c14 !important;
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0e0c14 !important;
+  color: #f0ecff !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── BG MESH ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(168,85,247,0.13) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(139,92,246,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  padding: 52px 0 40px;
+}
+.logo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--purple-dim);
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 50px;
+  padding: 8px 18px;
+  margin-bottom: 28px;
+}
+.logo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--purple);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(0.8)} }
+.logo-text { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; letter-spacing:.1em; color:var(--accent); text-transform:uppercase; }
+.header h1 { font-family:'Syne',sans-serif; font-size:clamp(26px,5vw,36px); font-weight:800; line-height:1.2; margin-bottom:12px; }
+.header h1 span { color:var(--accent); }
+.header p { color:var(--muted); font-size:15px; max-width:420px; margin:0 auto; line-height:1.6; }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:500;
+}
+.progress-info span:last-child { color:var(--accent); }
+.progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--accent));
+  border-radius: 4px;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* ── STEP ── */
+.step { display: none; animation: fadeIn .35s ease; }
+.step.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.step-label {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--purple);
+  margin-bottom:10px;
+}
+.step h2 {
+  font-family:'Syne',sans-serif;
+  font-size:clamp(20px,4vw,26px);
+  font-weight:700;
+  margin-bottom:8px;
+}
+.step .sub { color:var(--muted); font-size:14px; margin-bottom:28px; line-height:1.5; }
+
+/* ── FORM FIELDS ── */
+.field { margin-bottom:18px; }
+.field label { display:block; font-size:13px; font-weight:500; color:var(--muted); margin-bottom:7px; }
+.field input, .field textarea {
+  width:100%; background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:13px 16px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  outline:none;
+  transition:border-color .2s;
+}
+.field input:focus, .field textarea:focus { border-color:var(--purple); }
+.field textarea { resize:vertical; min-height:100px; }
+.field input::placeholder, .field textarea::placeholder { color:var(--muted); }
+
+/* ── OPTIONS GRID ── */
+.opts-grid { display:grid; gap:14px; }
+.opts-grid.cols-2 { grid-template-columns:1fr 1fr; }
+.opts-grid.cols-1 { grid-template-columns:1fr; }
+
+@media(max-width:500px){ .opts-grid.cols-2{grid-template-columns:1fr;} }
+
+.opt {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all .2s;
+  overflow: hidden;
+  user-select: none;
+}
+.opt:hover { border-color: rgba(168,85,247,0.4); }
+.opt.selected { border-color: var(--purple); background: rgba(168,85,247,0.08); }
+.opt.selected .opt-check { opacity:1; transform:scale(1); }
+
+/* ── STYLE CARDS (etapa 2) ── */
+.style-preview {
+  height:110px;
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--r-sm) var(--r-sm) 0 0;
+  flex-shrink:0;
+}
+.opt-body { padding:14px 16px; }
+.opt-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:3px; }
+.opt-desc { font-size:12px; color:var(--muted); line-height:1.4; }
+.opt-check {
+  position:absolute; top:10px; right:10px;
+  width:22px; height:22px; border-radius:50%;
+  background:var(--purple);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:scale(0.5);
+  transition:all .2s;
+  z-index:10;
+}
+.opt-check::after { content:'✓'; color:#fff; font-size:11px; font-weight:700; }
+
+/* ── STYLE MOCKUPS ── */
+/* Dark Premium */
+.mock-dark {
+  background:#0d0d0d;
+  display:flex; flex-direction:column;
+  padding:8px;
+  gap:5px;
+}
+.mock-dark .mh { height:16px; background:#1a1a1a; border-radius:3px; display:flex; align-items:center; padding:0 6px; gap:4px; }
+.mock-dark .mh-dot { width:6px;height:6px;border-radius:50%;background:#f59e0b; }
+.mock-dark .mh-txt { font-size:4.5px; color:#555; }
+.mock-dark .mbanner { height:40px; background:linear-gradient(135deg,#1a1a1a,#2d2d2d); border-radius:3px; display:flex;align-items:center;justify-content:center; }
+.mock-dark .mbanner-txt { font-size:6px; color:#f59e0b; font-weight:700; letter-spacing:.05em; }
+.mock-dark .mcards { display:flex;gap:3px; }
+.mock-dark .mcard { flex:1;height:25px;background:#1a1a1a;border-radius:3px;border:1px solid #2a2a2a; }
+
+/* Pastel */
+.mock-pastel {
+  background:#fff9fc;
+  display:flex;flex-direction:column;
+  padding:8px;
+  gap:5px;
+}
+.mock-pastel .mph { height:14px;background:#f9d0e0;border-radius:3px;display:flex;align-items:center;padding:0 6px;gap:3px; }
+.mock-pastel .mph-dot { width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#f9a8c9,#e879a8);border:1.5px solid #fff; margin-top:8px; }
+.mock-pastel .mph-txt { font-size:4px;color:#c06090; }
+.mock-pastel .mpbanner { height:38px;background:linear-gradient(135deg,#fde4ef,#fcc8de);border-radius:3px;display:flex;align-items:center;justify-content:center; }
+.mock-pastel .mpbanner-txt { font-size:6px;color:#c06090;font-weight:700; }
+.mock-pastel .mpcards { display:flex;gap:3px; }
+.mock-pastel .mpcard { flex:1;height:24px;background:#fff;border-radius:3px;border:1px solid #fde4ef; }
+
+/* Clean */
+.mock-clean {
+  background:#fafafa;
+  display:flex;flex-direction:column;
+  padding:8px;
+  gap:5px;
+}
+.mock-clean .mch { height:14px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;padding:0 6px;gap:4px; }
+.mock-clean .mch-line { height:2px;flex:1;background:#ddd;border-radius:2px; }
+.mock-clean .mcbanner { height:38px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;border:1px solid #e0e0e0; }
+.mock-clean .mcbanner-txt { font-size:6px;color:#333;font-weight:600; }
+.mock-clean .mccards { display:flex;gap:3px; }
+.mock-clean .mccard { flex:1;height:24px;background:#fff;border-radius:3px;border:1px solid #e8e8e8; }
+
+/* Custom */
+.mock-custom {
+  background:linear-gradient(135deg,#1a0533,#2d1458);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;
+}
+.mock-custom .mc-icon { font-size:22px; }
+.mock-custom .mc-txt { font-size:7px;color:rgba(255,255,255,0.6);text-align:center;line-height:1.4; }
+
+/* ── WIDGET CARDS (etapa 5) — REDESIGN ── */
+.widgets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media(max-width:460px){ .widgets-grid{grid-template-columns:1fr;} }
+
+.wopt {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all .2s;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+}
+.wopt:hover { border-color: rgba(168,85,247,0.35); transform:translateY(-1px); }
+.wopt.selected { border-color: var(--purple); }
+.wopt.selected .wcheck { opacity:1; transform:scale(1); }
+.wcheck {
+  position:absolute; top:8px; right:8px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--purple);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#fff;font-weight:700;
+  opacity:0;transform:scale(0.4);
+  transition:all .2s;
+  z-index:5;
+}
+
+/* Widget Preview Area */
+.wp {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Widget body */
+.wbody { padding:10px 12px 12px; }
+.wname { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; margin-bottom:2px; }
+.wdesc { font-size:10.5px; color:var(--muted); line-height:1.35; }
+
+/* ── WIDGET MINI PREVIEWS ── */
+
+/* Barra Marquee */
+.prev-marquee {
+  width:100%; overflow:hidden;
+  background:linear-gradient(90deg,#7c3aed,#a855f7);
+  height:22px; display:flex; align-items:center;
+}
+.marquee-inner {
+  display:flex; gap:24px; white-space:nowrap;
+  animation: marquee 3s linear infinite;
+  font-size:7px; color:#fff; font-weight:600; letter-spacing:.06em; padding:0 12px;
+}
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* Carrossel vídeo — STORIES VERTICAL */
+.prev-video {
+  display:flex; gap:5px; align-items:center; padding:0 8px;
+  height:100%;
+}
+.story-thumb {
+  width:34px; height:60px;
+  border-radius:5px;
+  background:linear-gradient(170deg,#1e1e2e,#2d1458);
+  border:1.5px solid var(--purple);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:3px; flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.story-thumb::before {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(170deg,rgba(168,85,247,0.3),transparent);
+}
+.story-play { font-size:12px; position:relative; z-index:1; }
+.story-bar {
+  width:24px; height:2px; border-radius:2px;
+  background:rgba(255,255,255,0.15); position:relative; z-index:1;
+}
+.story-thumb.active { border-color:#fff; box-shadow:0 0 8px rgba(168,85,247,0.6); }
+.story-thumb:first-child { transform:scale(1.08); }
+
+/* Stories círculos */
+.prev-stories {
+  display:flex; gap:8px; align-items:center; padding:0 10px;
+  height:100%;
+}
+.story-circle {
+  display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0;
+}
+.sc-ring {
+  width:32px; height:32px; border-radius:50%;
+  background: conic-gradient(#f59e0b 0deg, #ec4899 120deg, #8b5cf6 240deg, #f59e0b 360deg);
+  padding:2px; display:flex; align-items:center; justify-content:center;
+}
+.sc-inner { width:100%; height:100%; border-radius:50%; background:var(--surface); }
+.sc-label { font-size:5px; color:var(--muted); white-space:nowrap; }
+
+/* Compre por Tamanho */
+.prev-tamanho {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.tamanho-label { font-size:7px; color:var(--muted); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+.tamanho-chips { display:flex; gap:4px; flex-wrap:wrap; justify-content:center; }
+.tchip {
+  padding:3px 8px; border-radius:50px;
+  border:1px solid rgba(168,85,247,0.4);
+  background:var(--purple-dim);
+  font-size:7.5px; font-weight:700; color:var(--accent);
+}
+.tchip.active { background:var(--purple); color:#fff; border-color:var(--purple); }
+
+/* Compre por Marca */
+.prev-marca {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.marca-chips { display:flex; gap:4px; flex-wrap:wrap; justify-content:center; }
+.mchip {
+  padding:3px 8px; border-radius:4px;
+  border:1px solid var(--border);
+  background:var(--card);
+  font-size:7px; font-weight:600; color:var(--muted);
+}
+.mchip.active { border-color:var(--purple); color:var(--accent); }
+
+/* Selos */
+.prev-selos {
+  display:flex; gap:6px; align-items:center; justify-content:center; height:100%;
+}
+.selo {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.selo-icon { font-size:16px; }
+.selo-txt { font-size:5.5px; color:var(--muted); text-align:center; white-space:nowrap; }
+
+/* Cupom */
+.prev-cupom {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.cupom-code {
+  display:flex; align-items:center; gap:6px;
+  background:var(--purple-dim);
+  border:1px dashed rgba(168,85,247,0.5);
+  border-radius:5px; padding:5px 10px;
+}
+.cupom-text { font-size:10px; font-weight:700; color:var(--accent); letter-spacing:.1em; }
+.cupom-copy { font-size:8px; background:var(--purple); color:#fff; border-radius:3px; padding:2px 5px; cursor:pointer; }
+.cupom-label { font-size:6.5px; color:var(--muted); }
+
+/* Depoimentos */
+.prev-depo {
+  display:flex; flex-direction:column; justify-content:center; padding:0 10px;
+  height:100%;
+}
+.depo-stars { font-size:9px; margin-bottom:3px; }
+.depo-text { font-size:7px; color:var(--muted); line-height:1.4; margin-bottom:4px; font-style:italic; }
+.depo-author { font-size:6px; color:var(--purple); font-weight:600; }
+
+/* Barra benefícios */
+.prev-beneficios {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; height:100%;
+}
+.beneficios-bar {
+  display:flex; gap:10px; align-items:center;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:5px; padding:5px 10px;
+}
+.benef-item { display:flex; align-items:center; gap:3px; font-size:6.5px; color:var(--muted); }
+.benef-icon { font-size:10px; }
+
+/* Brinde auto */
+.prev-brinde {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; height:100%;
+}
+.brinde-box {
+  background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(168,85,247,0.05));
+  border:1px solid rgba(168,85,247,0.3);
+  border-radius:6px; padding:6px 12px;
+  text-align:center;
+}
+.brinde-icon { font-size:16px; }
+.brinde-txt { font-size:6.5px; color:var(--accent); margin-top:2px; }
+
+/* Promo Relâmpago */
+.prev-promo {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; height:100%;
+}
+.promo-badge {
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  border-radius:5px; padding:4px 10px;
+  display:flex; align-items:center; gap:4px;
+}
+.promo-txt { font-size:7px; font-weight:700; color:#fff; letter-spacing:.04em; }
+.timer-dots { display:flex; gap:4px; }
+.timer-block { background:var(--card); border-radius:3px; padding:2px 6px; font-size:9px; font-weight:700; color:var(--text); border:1px solid var(--border); }
+
+/* Links rápidos */
+.prev-links {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.links-grid { display:flex; gap:6px; }
+.link-btn {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:6px; padding:5px 8px;
+}
+.link-icon { font-size:12px; }
+.link-txt { font-size:5px; color:var(--muted); white-space:nowrap; }
+
+/* Instagram feed */
+.prev-insta {
+  display:flex; gap:3px; height:100%; padding:6px;
+  align-items:center;
+}
+.insta-cell {
+  flex:1; height:62px;
+  background:linear-gradient(135deg,rgba(168,85,247,0.2),rgba(236,72,153,0.1));
+  border-radius:4px; border:1px solid rgba(168,85,247,0.2);
+}
+.insta-cell.big { flex:1.5; }
+
+/* Newsletter */
+.prev-newsletter {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.nl-label { font-size:7px; color:var(--muted); }
+.nl-input {
+  display:flex; gap:4px; align-items:center;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:5px; padding:4px 6px; width:140px;
+}
+.nl-input-inner { flex:1; height:10px; background:transparent; }
+.nl-btn { background:var(--purple); border-radius:3px; padding:3px 7px; font-size:6.5px; color:#fff; font-weight:600; }
+
+/* Áudio */
+.prev-audio {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.audio-player {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:50px; padding:5px 14px;
+  display:flex; align-items:center; gap:6px;
+}
+.audio-play { width:18px;height:18px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff; }
+.audio-wave { display:flex;gap:2px;align-items:center; }
+.awave { width:2px;border-radius:2px;background:var(--purple); }
+
+/* Pop-up */
+.prev-popup {
+  display:flex; align-items:center; justify-content:center;
+  height:100%;
+}
+.popup-box {
+  background:var(--surface); border:1px solid rgba(168,85,247,0.4);
+  border-radius:8px; padding:8px 12px; text-align:center;
+  box-shadow: 0 0 16px rgba(168,85,247,0.2);
+  position:relative;
+}
+.popup-close { position:absolute;top:3px;right:6px;font-size:8px;color:var(--muted);cursor:pointer; }
+.popup-icon { font-size:14px; margin-bottom:2px; }
+.popup-txt { font-size:6.5px; color:var(--text); font-weight:600; margin-bottom:2px; }
+.popup-code { font-size:8px; font-weight:700; color:var(--accent); letter-spacing:.1em; }
+
+/* Calculadora */
+.prev-calc {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; height:100%;
+}
+.calc-box { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:5px 10px; }
+.calc-row { display:flex; gap:4px; align-items:center; }
+.calc-label { font-size:6px; color:var(--muted); width:30px; }
+.calc-input { width:30px;height:10px;background:var(--card);border:1px solid var(--border);border-radius:3px; }
+.calc-result { font-size:7px; color:var(--green); font-weight:700; text-align:center; margin-top:3px; }
+
+/* Card Boas-vindas */
+.prev-boasvindas {
+  display:flex; align-items:center; justify-content:center;
+  height:100%;
+}
+.bv-card {
+  background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(236,72,153,0.08));
+  border:1px solid rgba(168,85,247,0.3);
+  border-radius:8px; padding:8px 12px; text-align:center;
+  width:140px;
+}
+.bv-emoji { font-size:14px; margin-bottom:3px; }
+.bv-title { font-size:7px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.bv-sub { font-size:5.5px; color:var(--muted); line-height:1.4; }
+
+/* ── REDESIGN CARDS (etapa 4) ── */
+.redesign-grid { display:grid; gap:12px; }
+
+.rd-opt {
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;
+  align-items:stretch;
+  overflow:hidden;
+  position:relative;
+}
+.rd-opt:hover { border-color:rgba(168,85,247,0.4); transform:translateY(-1px); }
+.rd-opt.selected { border-color:var(--purple); background:rgba(168,85,247,0.06); }
+.rd-opt.selected .rd-check { opacity:1; transform:scale(1); }
+.rd-check {
+  position:absolute; top:14px; right:14px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--purple);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#fff;font-weight:700;
+  opacity:0;transform:scale(0.4);
+  transition:all .2s;
+}
+
+.rd-icon-col {
+  width:72px; flex-shrink:0;
+  background:var(--surface);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-right:1px solid var(--border);
+  padding:12px 8px;
+  gap:6px;
+}
+.rd-icon { font-size:26px; }
+.rd-rec { font-size:7px; font-weight:700; color:var(--accent); text-align:center; letter-spacing:.04em; }
+
+.rd-body { padding:16px 16px 16px 14px; flex:1; }
+.rd-badge {
+  display:inline-block;
+  font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 9px;border-radius:50px;
+}
+.rd-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--text); }
+.rd-desc { font-size:12px; color:var(--muted); line-height:1.55; margin:6px 0 10px; }
+.rd-scope-label { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; margin-bottom:6px; }
+.rd-items { display:flex; flex-direction:column; gap:4px; }
+.rd-item {
+  font-size:12px; color:var(--muted);
+  display:flex; align-items:center; gap:6px; line-height:1.3;
+}
+.rd-item::before { content:'✓'; color:var(--green); font-size:10px; font-weight:700; flex-shrink:0; }
+
+/* ── PALETA ATÉ 5 CORES (etapa 3) ── */
+.paleta-slots {
+  display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;
+}
+.slot {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  cursor:pointer;
+}
+.slot-circle {
+  width:52px; height:52px; border-radius:50%;
+  border:2px dashed rgba(255,255,255,0.15);
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s; position:relative; overflow:hidden;
+  background:var(--surface);
+}
+.slot-circle.filled { border-style:solid; border-color:rgba(255,255,255,0.25); }
+.slot-circle.ativo { border-color:var(--purple); box-shadow:0 0 0 3px rgba(168,85,247,0.3); }
+.slot-circle .slot-plus { font-size:18px; color:var(--muted); line-height:1; }
+.slot-circle .slot-remove {
+  position:absolute; inset:0; background:rgba(0,0,0,0.55);
+  display:none; align-items:center; justify-content:center;
+  font-size:14px; color:#fff; border-radius:50%;
+}
+.slot-circle:hover .slot-remove { display:flex; }
+.slot-label { font-size:10px; color:var(--muted); font-weight:500; white-space:nowrap; }
+.slot.ativo .slot-label { color:var(--accent); }
+
+.slot-add {
+  width:52px; height:52px; border-radius:50%;
+  border:2px dashed rgba(255,255,255,0.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .2s; background:var(--surface);
+  font-size:20px; color:rgba(255,255,255,0.2);
+}
+.slot-add:hover { border-color:rgba(168,85,247,0.4); color:var(--purple); }
+.slot-add.hidden { display:none; }
+
+/* Grid de cores rápidas */
+.cores-rapidas-label {
+  font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500;
+}
+.cores-rapidas-grid {
+  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;
+}
+.cr-item {
+  width:36px; height:36px; border-radius:50%;
+  cursor:pointer; transition:transform .15s, box-shadow .15s;
+  flex-shrink:0;
+}
+.cr-item:hover { transform:scale(1.15); box-shadow:0 0 10px rgba(255,255,255,0.2); }
+.cr-item.usado { opacity:0.4; }
+
+/* picker oculto */
+.hidden-picker { position:absolute; opacity:0; pointer-events:none; width:0; height:0; }
+
+/* Não sei a cor */
+.cor-nao-sei {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px; margin-bottom:4px;
+}
+.cor-nao-sei-label { font-size:13px; font-weight:600; color:var(--muted); }
+
+/* ── NAVEGAÇÃO ── */
+.nav {
+  display:flex;gap:12px;margin-top:32px;align-items:center;
+}
+.btn-back {
+  background:none;border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:12px 20px;
+  color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-size:14px;transition:all .2s;
+}
+.btn-back:hover { border-color:var(--purple); color:var(--text); }
+.btn-next {
+  flex:1;background:linear-gradient(135deg,var(--purple),#7c3aed);
+  border:none;border-radius:var(--r-sm);padding:14px 24px;
+  color:#fff;cursor:pointer;font-family:'Syne',sans-serif;
+  font-size:15px;font-weight:700;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-next:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(168,85,247,0.35); }
+.btn-next:disabled { opacity:.4;cursor:not-allowed;transform:none;box-shadow:none; }
+
+/* ── CONTADOR WIDGETS ── */
+.widget-counter {
+  font-size:12px;color:var(--muted);margin-bottom:14px;
+  display:flex;align-items:center;gap:6px;
+}
+.counter-badge {
+  background:var(--purple);color:#fff;
+  border-radius:50px;padding:2px 8px;
+  font-size:11px;font-weight:700;
+  transition:all .2s;
+}
+
+/* ── RESUMO ── */
+.resumo-section { margin-bottom:20px; }
+.resumo-section h3 { font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;letter-spacing:.06em;text-transform:uppercase; }
+.resumo-line { display:flex;gap:8px;margin-bottom:6px;font-size:14px; }
+.resumo-label { color:var(--muted);min-width:100px; }
+.resumo-val { color:var(--text);font-weight:500; }
+.resumo-chips { display:flex;flex-wrap:wrap;gap:6px; }
+.resumo-chip { background:var(--purple-dim);border:1px solid rgba(168,85,247,0.3);border-radius:50px;padding:4px 12px;font-size:12px;color:var(--accent); }
+
+.resumo-card {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px;margin-bottom:16px;
+}
+
+/* ── SUCESSO ── */
+.sucesso {
+  text-align:center;padding:60px 20px;
+  display:none;
+}
+.sucesso.active { display:block; animation:fadeIn .5s ease; }
+.sucesso-icon { font-size:56px;margin-bottom:20px; }
+.sucesso h2 { font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px; }
+.sucesso p { color:var(--muted);font-size:15px;max-width:360px;margin:0 auto;line-height:1.6; }
+
+/* ── ADMIN ── */
+#admin-gate, #admin-panel { display:none; }
+#admin-gate.active, #admin-panel.active { display:block; animation:fadeIn .3s ease; }
+
+.admin-header {
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:16px 24px;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+.admin-logo { font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--accent); }
+.admin-tag { font-size:10px;background:var(--purple-dim);border:1px solid rgba(168,85,247,0.3);border-radius:50px;padding:2px 8px;color:var(--purple); }
+.btn-logout { margin-left:auto;background:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 14px;color:var(--muted);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif; }
+
+.admin-content { max-width:880px;margin:0 auto;padding:32px 20px; }
+.admin-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px; }
+.stat-card { background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px; }
+.stat-num { font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent); }
+.stat-label { font-size:12px;color:var(--muted);margin-top:3px; }
+
+.briefing-card {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px;margin-bottom:14px;
+  cursor:pointer;transition:border-color .2s;
+}
+.briefing-card:hover { border-color:rgba(168,85,247,0.3); }
+.bc-top { display:flex;align-items:center;gap:12px;margin-bottom:12px; }
+.bc-avatar { width:36px;height:36px;border-radius:50%;background:var(--purple-dim);border:1px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:16px; }
+.bc-info h4 { font-family:'Syne',sans-serif;font-size:14px;font-weight:700; }
+.bc-info small { font-size:11px;color:var(--muted); }
+.bc-meta { display:flex;gap:8px;margin-left:auto; }
+.bc-badge { font-size:10px;border-radius:50px;padding:3px 8px;font-weight:600; }
+.bc-details { display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px; }
+.bc-detail-label { color:var(--muted); }
+.bc-detail-val { color:var(--text);font-weight:500; }
+.bc-widgets-list { margin-top:10px;display:flex;flex-wrap:wrap;gap:4px; }
+.bc-wchip { font-size:10px;background:var(--purple-dim);border:1px solid rgba(168,85,247,0.2);border-radius:50px;padding:2px 8px;color:var(--accent); }
+
+.empty-state { text-align:center;padding:60px 20px;color:var(--muted); }
+.empty-icon { font-size:40px;margin-bottom:12px;opacity:.4; }
+
+/* ── NAV TOP ADMIN LINK ── */
+
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- FORMULÁRIO PRINCIPAL -->
+<div id="main-form">
+
+<div class="shell">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-pill">
+      <div class="logo-dot"></div>
+      <span class="logo-text">Planned Mídia × FácilZap</span>
+    </div>
+    <h1>Vamos <span>personalizar</span> sua loja FácilZap</h1>
+    <p>Preencha as informações abaixo e nossa equipe cuida de toda a personalização visual e de conversão da sua loja.</p>
+  </div>
+
+  <!-- Progresso -->
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="step-label">Etapa 1 de 7</span>
+      <span id="step-name">Dados da Loja</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <!-- ═══ ETAPA 1: DADOS ═══ -->
+  <div class="step active" id="step-1">
+    <div class="step-label">01 — Identificação</div>
+    <h2>Informações da sua loja</h2>
+    <p class="sub">Precisamos desses dados para acessar e personalizar sua loja no FácilZap.</p>
+
+    <div class="field">
+      <label>Nome da loja *</label>
+      <input type="text" id="loja_nome" placeholder="Ex: Boutique da Maria">
+    </div>
+    <div class="field">
+      <label>URL da loja *</label>
+      <input type="url" id="loja_url" placeholder="https://minhaloja.facilzap.com.br">
+    </div>
+    <div class="field">
+      <label>WhatsApp com DDD</label>
+      <input type="tel" id="loja_whatsapp" placeholder="(11) 99999-9999">
+    </div>
+    <div class="field">
+      <label>Instagram</label>
+      <input type="text" id="loja_instagram" placeholder="@minhaloja">
+    </div>
+
+    <div class="nav">
+      <button class="btn-next" onclick="nextStep(1)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ ETAPA 2: ESTILO ═══ -->
+  <div class="step" id="step-2">
+    <div class="step-label">02 — Identidade Visual</div>
+    <h2>Qual estilo combina com sua loja?</h2>
+    <p class="sub">Escolha o estilo que melhor representa sua marca.</p>
+
+    <div class="opts-grid cols-2">
+
+      <div class="opt" onclick="singleSelect(this,'estilo','dark')" data-val="dark">
+        <div class="style-preview">
+          <div class="mock-dark" style="height:100%">
+            <div class="mh"><div class="mh-dot"></div><div class="mh-txt">LOJA</div></div>
+            <div class="mbanner"><div class="mbanner-txt">✦ COLEÇÃO NOVA ✦</div></div>
+            <div class="mcards"><div class="mcard"></div><div class="mcard"></div><div class="mcard"></div></div>
+          </div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-body">
+          <div class="opt-name">🖤 Dark Premium</div>
+          <div class="opt-desc">Fundo escuro, tons dourados ou neon. Sofisticado e moderno.</div>
+        </div>
+      </div>
+
+      <div class="opt" onclick="singleSelect(this,'estilo','pastel')" data-val="pastel">
+        <div class="style-preview">
+          <div class="mock-pastel" style="height:100%">
+            <div class="mph">
+              <div style="display:flex;gap:3px;align-items:center">
+                <div class="mph-dot"></div>
+                <div class="mph-dot" style="width:16px;height:16px;background:linear-gradient(135deg,#fbbde8,#e879a8)"></div>
+                <div class="mph-dot" style="width:14px;height:14px;background:linear-gradient(135deg,#f9a8c9,#db6ca0)"></div>
+              </div>
+            </div>
+            <div class="mpbanner"><div class="mpbanner-txt">🌸 Nova Coleção</div></div>
+            <div class="mpcards"><div class="mpcard"></div><div class="mpcard"></div><div class="mpcard"></div></div>
+          </div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-body">
+          <div class="opt-name">🌸 Pastel / Feminino</div>
+          <div class="opt-desc">Tons suaves, rosa, lilás. Delicado e acolhedor.</div>
+        </div>
+      </div>
+
+      <div class="opt" onclick="singleSelect(this,'estilo','clean')" data-val="clean">
+        <div class="style-preview">
+          <div class="mock-clean" style="height:100%">
+            <div class="mch"><div class="mch-line"></div><div class="mch-line" style="max-width:40px"></div></div>
+            <div class="mcbanner"><div class="mcbanner-txt">Nova Temporada</div></div>
+            <div class="mccards"><div class="mccard"></div><div class="mccard"></div><div class="mccard"></div></div>
+          </div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-body">
+          <div class="opt-name">🤍 Clean / Elegante</div>
+          <div class="opt-desc">Fundo branco, tipografia refinada. Atemporal e profissional.</div>
+        </div>
+      </div>
+
+      <div class="opt" onclick="singleSelect(this,'estilo','custom')" data-val="custom">
+        <div class="style-preview">
+          <div class="mock-custom" style="height:100%">
+            <div class="mc-icon">🎨</div>
+            <div class="mc-txt">Cores e estilo<br>personalizados</div>
+          </div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-body">
+          <div class="opt-name">✨ Personalizado</div>
+          <div class="opt-desc">Definimos juntos nas próximas etapas.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(2)">← Voltar</button>
+      <button class="btn-next" onclick="nextStep(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ ETAPA 3: CORES ═══ -->
+  <div class="step" id="step-3">
+    <div class="step-label">03 — Cores da Marca</div>
+    <h2>Quais são as cores da sua marca?</h2>
+    <p class="sub">Selecione até 5 cores. Clique num círculo para escolher a cor dele.</p>
+
+    <!-- Slots de cor -->
+    <div class="paleta-slots" id="paleta-slots">
+      <!-- gerado pelo JS -->
+    </div>
+
+    <!-- picker invisível acionado pelo JS -->
+    <input type="color" id="hidden-color-picker" class="hidden-picker" oninput="onPickerChange(this.value)">
+
+    <!-- Cores rápidas -->
+    <div class="cores-rapidas-label">Ou clique numa cor da lista para adicionar:</div>
+    <div class="cores-rapidas-grid">
+      <div class="cr-item" style="background:#ec4899" onclick="adicionarCorRapida('#ec4899')" title="Rosa Pink"></div>
+      <div class="cr-item" style="background:#f9a8d4" onclick="adicionarCorRapida('#f9a8d4')" title="Rosa Suave"></div>
+      <div class="cr-item" style="background:#a855f7" onclick="adicionarCorRapida('#a855f7')" title="Roxo"></div>
+      <div class="cr-item" style="background:#8b5cf6" onclick="adicionarCorRapida('#8b5cf6')" title="Lilás"></div>
+      <div class="cr-item" style="background:#3b82f6" onclick="adicionarCorRapida('#3b82f6')" title="Azul"></div>
+      <div class="cr-item" style="background:#1d4ed8" onclick="adicionarCorRapida('#1d4ed8')" title="Azul Escuro"></div>
+      <div class="cr-item" style="background:#22c55e" onclick="adicionarCorRapida('#22c55e')" title="Verde"></div>
+      <div class="cr-item" style="background:#86efac" onclick="adicionarCorRapida('#86efac')" title="Verde Menta"></div>
+      <div class="cr-item" style="background:#f59e0b" onclick="adicionarCorRapida('#f59e0b')" title="Dourado"></div>
+      <div class="cr-item" style="background:#fef08a" onclick="adicionarCorRapida('#fef08a')" title="Amarelo"></div>
+      <div class="cr-item" style="background:#ef4444" onclick="adicionarCorRapida('#ef4444')" title="Vermelho"></div>
+      <div class="cr-item" style="background:#fb923c" onclick="adicionarCorRapida('#fb923c')" title="Laranja"></div>
+      <div class="cr-item" style="background:#14b8a6" onclick="adicionarCorRapida('#14b8a6')" title="Teal"></div>
+      <div class="cr-item" style="background:#db2777" onclick="adicionarCorRapida('#db2777')" title="Magenta"></div>
+      <div class="cr-item" style="background:#1f2937" onclick="adicionarCorRapida('#1f2937')" title="Preto"></div>
+      <div class="cr-item" style="background:#f8fafc;border:1px solid rgba(255,255,255,0.15)" onclick="adicionarCorRapida('#f8fafc')" title="Branco"></div>
+      <div class="cr-item" style="background:#b45309" onclick="adicionarCorRapida('#b45309')" title="Marrom"></div>
+      <div class="cr-item" style="background:#6b7280" onclick="adicionarCorRapida('#6b7280')" title="Cinza"></div>
+    </div>
+
+    <!-- Não sabe a cor -->
+    <div class="cor-nao-sei">
+      <div class="cor-nao-sei-label">Não sabe o código exato?</div>
+      <div class="field" style="margin-top:10px;margin-bottom:0">
+        <textarea id="cor_descricao" placeholder="Ex: rosa bebê e dourado, igual à minha logo. As cores são iguais ao meu Instagram @minhaloja..." style="min-height:70px"></textarea>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(3)">← Voltar</button>
+      <button class="btn-next" onclick="nextStep(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ ETAPA 4: REDESIGN ═══ -->
+  <div class="step" id="step-4">
+    <div class="step-label">04 — Escopo do Projeto</div>
+    <h2>O que você quer personalizar?</h2>
+    <p class="sub">Selecione o nível de personalização que melhor descreve o que você está buscando.</p>
+
+    <div class="redesign-grid">
+
+      <!-- Visual -->
+      <div class="rd-opt" onclick="singleSelectRd(this,'visual')" data-val="visual">
+        <div class="rd-icon-col">
+          <div class="rd-icon">🎨</div>
+        </div>
+        <div class="rd-body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <div class="rd-name">Só a página inicial</div>
+            <div class="rd-badge" style="background:rgba(168,85,247,0.12);color:var(--purple)">Essencial</div>
+          </div>
+          <div class="rd-desc">Quero personalizar a aparência da página inicial — cores, fontes, header, categorias e cards de produto.</div>
+          <div class="rd-scope-label">O que ajustamos na sua loja:</div>
+          <div class="rd-items">
+            <div class="rd-item">Paleta de cores e tipografia</div>
+            <div class="rd-item">Header, logo e menu</div>
+            <div class="rd-item">Círculos e seção de categorias</div>
+            <div class="rd-item">Cards de produto da vitrine</div>
+          </div>
+        </div>
+        <div class="rd-check">✓</div>
+      </div>
+
+      <!-- Visual + Conversão -->
+      <div class="rd-opt" onclick="singleSelectRd(this,'completo')" data-val="completo">
+        <div class="rd-icon-col" style="background:rgba(168,85,247,0.06)">
+          <div class="rd-icon">🛍️</div>
+        </div>
+        <div class="rd-body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <div class="rd-name">Home + outras páginas</div>
+            <div class="rd-badge" style="background:rgba(168,85,247,0.15);color:var(--accent)">Completo</div>
+          </div>
+          <div class="rd-desc">Quero personalizar a home e também as páginas de produto, categorias e a versão mobile da loja.</div>
+          <div class="rd-scope-label">O que ajustamos na sua loja:</div>
+          <div class="rd-items">
+            <div class="rd-item">Tudo do Visual da Home</div>
+            <div class="rd-item">Visual da página de produto</div>
+            <div class="rd-item">Seção de categorias personalizada</div>
+            <div class="rd-item">Botões e destaques estilizados</div>
+            <div class="rd-item">Layout mobile otimizado</div>
+          </div>
+        </div>
+        <div class="rd-check">✓</div>
+      </div>
+
+      <!-- Premium -->
+      <div class="rd-opt" onclick="singleSelectRd(this,'premium')" data-val="premium">
+        <div class="rd-icon-col" style="background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(236,72,153,0.04))">
+          <div class="rd-icon">⚡</div>
+        </div>
+        <div class="rd-body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <div class="rd-name">Tudo + widgets</div>
+            <div class="rd-badge" style="background:linear-gradient(135deg,rgba(168,85,247,0.2),rgba(236,72,153,0.1));color:var(--accent)">Premium</div>
+          </div>
+          <div class="rd-desc">Quero personalizar a loja toda e também configurar widgets extras na página inicial (barra animada, stories, selos, etc).</div>
+          <div class="rd-scope-label">O que ajustamos na sua loja:</div>
+          <div class="rd-items">
+            <div class="rd-item">Tudo do Visual + Conversão</div>
+            <div class="rd-item">Widgets de vendas configurados</div>
+            <div class="rd-item">Footer e rodapé personalizados</div>
+            <div class="rd-item">Responsivo mobile avançado</div>
+            <div class="rd-item">CSS avançado em toda a loja</div>
+          </div>
+        </div>
+        <div class="rd-check">✓</div>
+      </div>
+
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(4)">← Voltar</button>
+      <button class="btn-next" onclick="nextStep(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ ETAPA 5: WIDGETS ═══ -->
+  <div class="step" id="step-5">
+    <div class="step-label">05 — Funcionalidades</div>
+    <h2>Quais recursos quer na sua loja?</h2>
+    <p class="sub">Selecione quantos quiser. Cada recurso é desenvolvido e inserido manualmente.</p>
+
+    <div class="widget-counter">
+      Selecionados: <span class="counter-badge" id="widget-count">0</span>
+    </div>
+
+    <div class="widgets-grid">
+
+      <!-- 1. Barra Marquee -->
+      <div class="wopt" onclick="toggleWidget(this,'barra_marquee')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div style="width:100%;display:flex;flex-direction:column;gap:4px;padding:0 0 8px">
+            <div class="prev-marquee">
+              <div class="marquee-inner">
+                <span>🚚 FRETE GRÁTIS</span><span>⭐ AVALIE-NOS</span>
+                <span>💳 PARCELAMOS</span><span>🎁 BRINDE</span>
+                <span>🚚 FRETE GRÁTIS</span><span>⭐ AVALIE-NOS</span>
+                <span>💳 PARCELAMOS</span><span>🎁 BRINDE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">📢 Barra Animada</div>
+          <div class="wdesc">Avisos que deslizam no topo da loja.</div>
+        </div>
+      </div>
+
+      <!-- 2. Carrossel Vídeo STORIES VERTICAL -->
+      <div class="wopt" onclick="toggleWidget(this,'carrossel_video')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-video">
+            <div class="story-thumb active">
+              <div class="story-play">▶</div>
+              <div class="story-bar"></div>
+            </div>
+            <div class="story-thumb">
+              <div class="story-play">▶</div>
+              <div class="story-bar"></div>
+            </div>
+            <div class="story-thumb" style="opacity:.6">
+              <div class="story-play">▶</div>
+              <div class="story-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🎬 Vídeos em Stories</div>
+          <div class="wdesc">Carrossel vertical estilo Stories com vídeos da marca.</div>
+        </div>
+      </div>
+
+      <!-- 3. Stories / Destaques -->
+      <div class="wopt" onclick="toggleWidget(this,'stories')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-stories">
+            <div class="story-circle">
+              <div class="sc-ring"><div class="sc-inner"></div></div>
+              <div class="sc-label">Novidades</div>
+            </div>
+            <div class="story-circle">
+              <div class="sc-ring"><div class="sc-inner"></div></div>
+              <div class="sc-label">Looks</div>
+            </div>
+            <div class="story-circle">
+              <div class="sc-ring"><div class="sc-inner"></div></div>
+              <div class="sc-label">Promos</div>
+            </div>
+            <div class="story-circle">
+              <div class="sc-ring"><div class="sc-inner"></div></div>
+              <div class="sc-label">Sobre</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">📱 Stories / Destaques</div>
+          <div class="wdesc">Círculos estilo Instagram com destaques da loja.</div>
+        </div>
+      </div>
+
+      <!-- 4. Compre por Tamanho -->
+      <div class="wopt" onclick="toggleWidget(this,'compre_tamanho')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-tamanho">
+            <div class="tamanho-label">Compre por Tamanho</div>
+            <div class="tamanho-chips">
+              <div class="tchip">PP</div>
+              <div class="tchip active">P</div>
+              <div class="tchip">M</div>
+              <div class="tchip">G</div>
+              <div class="tchip">GG</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">👚 Compre por Tamanho</div>
+          <div class="wdesc">Botões PP, P, M, G, GG que filtram produtos.</div>
+        </div>
+      </div>
+
+      <!-- 5. Compre por Marca -->
+      <div class="wopt" onclick="toggleWidget(this,'compre_marca')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-marca">
+            <div style="font-size:7px;color:var(--muted);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Marcas</div>
+            <div class="marca-chips">
+              <div class="mchip active">Nike</div>
+              <div class="mchip">Adidas</div>
+              <div class="mchip">Puma</div>
+              <div class="mchip">Under</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🏷️ Compre por Marca</div>
+          <div class="wdesc">Atalhos rápidos para filtrar produtos por marca.</div>
+        </div>
+      </div>
+
+      <!-- 6. Selos de Confiança -->
+      <div class="wopt" onclick="toggleWidget(this,'selos_confianca')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-selos">
+            <div class="selo"><div class="selo-icon">🔒</div><div class="selo-txt">Compra<br>Segura</div></div>
+            <div class="selo"><div class="selo-icon">🚚</div><div class="selo-txt">Envio<br>Rápido</div></div>
+            <div class="selo"><div class="selo-icon">↩️</div><div class="selo-txt">Troca<br>Fácil</div></div>
+            <div class="selo"><div class="selo-icon">⭐</div><div class="selo-txt">Top<br>Seller</div></div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🛡️ Selos de Confiança</div>
+          <div class="wdesc">Badges que transmitem segurança ao comprador.</div>
+        </div>
+      </div>
+
+      <!-- 7. Cupom Copiável -->
+      <div class="wopt" onclick="toggleWidget(this,'cupom_copiavel')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-cupom">
+            <div class="cupom-label">Use no checkout ↓</div>
+            <div class="cupom-code">
+              <div class="cupom-text">PROMO15</div>
+              <div class="cupom-copy">Copiar</div>
+            </div>
+            <div class="cupom-label">15% de desconto na 1ª compra</div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🎟️ Cupom Copiável</div>
+          <div class="wdesc">Código de desconto que o cliente copia com 1 clique.</div>
+        </div>
+      </div>
+
+      <!-- 8. Depoimentos -->
+      <div class="wopt" onclick="toggleWidget(this,'depoimentos')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-depo">
+            <div class="depo-stars">⭐⭐⭐⭐⭐</div>
+            <div class="depo-text">"Chegou super rápido e a qualidade é incrível!"</div>
+            <div class="depo-author">— Ana Paula, SP</div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">💬 Depoimentos</div>
+          <div class="wdesc">Avaliações reais de clientes em destaque na home.</div>
+        </div>
+      </div>
+
+      <!-- 9. Barra de Benefícios -->
+      <div class="wopt" onclick="toggleWidget(this,'barra_beneficios')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-beneficios">
+            <div class="beneficios-bar">
+              <div class="benef-item"><div class="benef-icon">🚚</div>Frete Grátis</div>
+              <div style="width:1px;height:14px;background:var(--border)"></div>
+              <div class="benef-item"><div class="benef-icon">💳</div>12x sem juros</div>
+              <div style="width:1px;height:14px;background:var(--border)"></div>
+              <div class="benef-item"><div class="benef-icon">↩️</div>Troca grátis</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">✅ Barra de Benefícios</div>
+          <div class="wdesc">Faixa fixa com os principais diferenciais da sua loja.</div>
+        </div>
+      </div>
+
+      <!-- 10. Brinde Automático -->
+      <div class="wopt" onclick="toggleWidget(this,'brinde_auto')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-brinde">
+            <div class="brinde-box">
+              <div class="brinde-icon">🎁</div>
+              <div class="brinde-txt">Brinde liberado!<br>Acima de R$ 150</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🎁 Brinde Automático</div>
+          <div class="wdesc">Aparece quando o cliente atinge um valor mínimo.</div>
+        </div>
+      </div>
+
+      <!-- 11. Promo Relâmpago -->
+      <div class="wopt" onclick="toggleWidget(this,'promo_relampago')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-promo">
+            <div class="promo-badge">⚡ <div class="promo-txt">OFERTA RELÂMPAGO</div></div>
+            <div class="timer-dots">
+              <div class="timer-block">02</div>
+              <div style="font-size:11px;font-weight:700;color:var(--muted)">:</div>
+              <div class="timer-block">47</div>
+              <div style="font-size:11px;font-weight:700;color:var(--muted)">:</div>
+              <div class="timer-block">13</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">⚡ Promo Relâmpago</div>
+          <div class="wdesc">Contador regressivo que cria urgência de compra.</div>
+        </div>
+      </div>
+
+      <!-- 12. Links Rápidos -->
+      <div class="wopt" onclick="toggleWidget(this,'links_rapidos')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-links">
+            <div class="links-grid">
+              <div class="link-btn"><div class="link-icon">👗</div><div class="link-txt">Feminino</div></div>
+              <div class="link-btn"><div class="link-icon">👟</div><div class="link-txt">Calçados</div></div>
+              <div class="link-btn"><div class="link-icon">💍</div><div class="link-txt">Acessórios</div></div>
+              <div class="link-btn"><div class="link-icon">🏷️</div><div class="link-txt">Promoções</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🔗 Links Rápidos</div>
+          <div class="wdesc">Atalhos visuais para categorias ou páginas especiais.</div>
+        </div>
+      </div>
+
+      <!-- 13. Instagram Feed -->
+      <div class="wopt" onclick="toggleWidget(this,'instagram_feed')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-insta">
+            <div class="insta-cell big"></div>
+            <div style="display:flex;flex-direction:column;gap:3px;flex:1">
+              <div class="insta-cell" style="flex:1"></div>
+              <div class="insta-cell" style="flex:1"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:3px;flex:1">
+              <div class="insta-cell" style="flex:1"></div>
+              <div class="insta-cell" style="flex:1"></div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">📸 Seção Instagram</div>
+          <div class="wdesc">Galeria com as fotos mais recentes do seu perfil.</div>
+        </div>
+      </div>
+
+      <!-- 14. Newsletter -->
+      <div class="wopt" onclick="toggleWidget(this,'newsletter')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-newsletter">
+            <div class="nl-label">Fique por dentro das novidades ✉️</div>
+            <div class="nl-input">
+              <div class="nl-input-inner"></div>
+              <div class="nl-btn">Cadastrar</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">✉️ Newsletter</div>
+          <div class="wdesc">Captura e-mails de clientes para campanhas.</div>
+        </div>
+      </div>
+
+      <!-- 15. Áudio de Boas-vindas -->
+      <div class="wopt" onclick="toggleWidget(this,'audio_boasvindas')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-audio">
+            <div style="font-size:7px;color:var(--muted);margin-bottom:2px">Mensagem da dona da loja 🎙️</div>
+            <div class="audio-player">
+              <div class="audio-play">▶</div>
+              <div class="audio-wave">
+                <div class="awave" style="height:6px"></div>
+                <div class="awave" style="height:12px"></div>
+                <div class="awave" style="height:8px"></div>
+                <div class="awave" style="height:14px"></div>
+                <div class="awave" style="height:5px"></div>
+                <div class="awave" style="height:10px"></div>
+                <div class="awave" style="height:7px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🎙️ Áudio de Boas-vindas</div>
+          <div class="wdesc">Mensagem em áudio da dona da loja ao entrar.</div>
+        </div>
+      </div>
+
+      <!-- 16. Pop-up Cupom -->
+      <div class="wopt" onclick="toggleWidget(this,'popup_cupom')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-popup">
+            <div class="popup-box">
+              <div class="popup-close">✕</div>
+              <div class="popup-icon">🛍️</div>
+              <div class="popup-txt">Bem-vindo! Ganhe 10%</div>
+              <div class="popup-code">DESCONTO10</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">🪟 Pop-up Cupom</div>
+          <div class="wdesc">Janela de boas-vindas com desconto exclusivo.</div>
+        </div>
+      </div>
+
+      <!-- 17. Calculadora -->
+      <div class="wopt" onclick="toggleWidget(this,'calculadora')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-calc">
+            <div class="calc-box">
+              <div class="calc-row" style="margin-bottom:3px">
+                <div class="calc-label">Tamanho</div>
+                <div class="calc-input"></div>
+              </div>
+              <div class="calc-row">
+                <div class="calc-label">Medidas</div>
+                <div class="calc-input"></div>
+              </div>
+              <div class="calc-result">✓ Recomendado: M</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">📏 Calculadora</div>
+          <div class="wdesc">Ajuda o cliente a encontrar o tamanho ideal.</div>
+        </div>
+      </div>
+
+      <!-- 18. Card Boas-vindas -->
+      <div class="wopt" onclick="toggleWidget(this,'boas_vindas')">
+        <div class="wcheck">✓</div>
+        <div class="wp">
+          <div class="prev-boasvindas">
+            <div class="bv-card">
+              <div class="bv-emoji">🌟</div>
+              <div class="bv-title">Bem-vinda à nossa loja!</div>
+              <div class="bv-sub">Confira nossas novidades e aproveite condições especiais.</div>
+            </div>
+          </div>
+        </div>
+        <div class="wbody">
+          <div class="wname">💌 Card Boas-vindas</div>
+          <div class="wdesc">Banner de boas-vindas com texto e identidade da marca.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(5)">← Voltar</button>
+      <button class="btn-next" onclick="nextStep(5)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ ETAPA 6: REFERÊNCIAS ═══ -->
+  <div class="step" id="step-6">
+    <div class="step-label">06 — Inspiração</div>
+    <h2>Tem alguma loja que admira?</h2>
+    <p class="sub">Cole links de lojas que te inspiram — do FácilZap ou de qualquer outro lugar. Opcional.</p>
+
+    <div class="field">
+      <label>Link de referência 1</label>
+      <input type="url" id="ref1" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label>Link de referência 2</label>
+      <input type="url" id="ref2" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label>O que te chamou atenção nessas referências?</label>
+      <textarea id="ref_obs" placeholder="Ex: gostei do menu fixo, das cores, dos cards maiores..."></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(6)">← Voltar</button>
+      <button class="btn-next" onclick="nextStep(6)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ ETAPA 7: OBSERVAÇÕES ═══ -->
+  <div class="step" id="step-7">
+    <div class="step-label">07 — Finalização</div>
+    <h2>Alguma observação final?</h2>
+    <p class="sub">Informações extras, dúvidas ou detalhes que queira que nossa equipe saiba.</p>
+
+    <div class="field">
+      <label>Observações gerais</label>
+      <textarea id="observacoes" placeholder="Ex: quero o tom mais discreto, tenho urgência para esta semana, não gosto de cores chamativas..."></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(7)">← Voltar</button>
+      <button class="btn-next" onclick="enviarBriefing()">Enviar Briefing ✦</button>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+</div><!-- /main-form -->
+<!-- TELA DE SUCESSO -->
+<div id="sucesso" style="display:none;min-height:100vh;background:#0e0c14;padding:60px 20px;">
+  <div style="max-width:480px;margin:0 auto;text-align:center;font-family:'DM Sans',sans-serif;color:#f0ecff;">
+    <div style="font-size:56px;margin-bottom:20px;">✅</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:12px;color:#f0ecff;">Briefing recebido!</h2>
+    <p style="color:#7c7a8e;font-size:15px;line-height:1.6;margin-bottom:28px;">Suas informações chegaram pra gente. Em breve nossa equipe entrará em contato pelo WhatsApp para alinhar os próximos passos.</p>
+
+    <div style="background:#1e1a2b;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:24px;text-align:left;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7c7a8e;margin-bottom:16px;">O que acontece agora</div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:26px;height:26px;border-radius:50%;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#c084fc;flex-shrink:0;">1</div>
+          <div><div style="font-size:14px;font-weight:600;color:#f0ecff;margin-bottom:3px;">Nossa equipe analisa seu briefing</div><div style="font-size:12px;color:#7c7a8e;">Lemos tudo com atenção antes de entrar em contato.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:26px;height:26px;border-radius:50%;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#c084fc;flex-shrink:0;">2</div>
+          <div><div style="font-size:14px;font-weight:600;color:#f0ecff;margin-bottom:3px;">Contato pelo WhatsApp</div><div style="font-size:12px;color:#7c7a8e;">Você receberá uma mensagem em até 24 horas úteis.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:26px;height:26px;border-radius:50%;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#c084fc;flex-shrink:0;">3</div>
+          <div><div style="font-size:14px;font-weight:600;color:#f0ecff;margin-bottom:3px;">Início da personalização</div><div style="font-size:12px;color:#7c7a8e;">Após o alinhamento, começamos a transformar sua loja.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:24px;">📱</div>
+      <div style="text-align:left;">
+        <div style="font-size:13px;font-weight:600;color:#f0ecff;margin-bottom:2px;">Fique de olho no WhatsApp</div>
+        <div style="font-size:12px;color:#7c7a8e;">Responderemos em até 24 horas úteis.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ ADMIN GATE ═══ -->
+<div id="admin-gate">
+  <div class="shell" style="max-width:400px;padding-top:80px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="logo-pill" style="justify-content:center">
+        <div class="logo-dot"></div>
+        <span class="logo-text">Painel Administrativo</span>
+      </div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-top:20px">Acesso restrito</h2>
+      <p style="color:var(--muted);font-size:14px;margin-top:8px">Apenas equipe Planned Mídia</p>
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="admin-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
+    </div>
+    <button class="btn-next" onclick="adminLogin()" style="width:100%">Entrar →</button>
+    <div id="admin-erro" style="color:#f87171;font-size:13px;text-align:center;margin-top:12px;display:none">Senha incorreta.</div>
+    <div style="margin-top:20px;text-align:center">
+      <a href="#" onclick="showForm();return false" style="color:var(--muted);font-size:13px;text-decoration:none">← Voltar ao formulário</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div id="admin-panel">
+  <div class="admin-header">
+    <div class="admin-logo">Planned Mídia</div>
+    <div class="admin-tag">Admin</div>
+    <button class="btn-logout" onclick="adminLogout()">Sair</button>
+  </div>
+  <div class="admin-content">
+    <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:20px">Briefings Recebidos</h2>
+    <div class="admin-stats" id="admin-stats">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total recebido</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-hoje">0</div><div class="stat-label">Hoje</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-widgets">0</div><div class="stat-label">Widgets médio</div></div>
+    </div>
+    <div id="briefings-list"></div>
+  </div>
+</div>
+
+<!-- admin via URL ?admin -->
+
+<script>
+// ═══ STATE ═══
+const state = {
+  currentStep: 1,
+  totalSteps: 7,
+  estilo: null,
+  paleta: null,
+  redesign: null,
+  widgets: [],
+  cores: []
+};
+
+const stepNames = ['Dados da Loja','Estilo Visual','Cores','Escopo','Funcionalidades','Referências','Observações'];
+
+// ═══ NAVEGAÇÃO ═══
+function updateProgress() {
+  const pct = ((state.currentStep - 1) / (state.totalSteps - 1)) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-label').textContent = `Etapa ${state.currentStep} de ${state.totalSteps}`;
+  document.getElementById('step-name').textContent = stepNames[state.currentStep - 1];
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  state.currentStep = n;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextStep(from) {
+  if (from === 1) {
+    const nome = document.getElementById('loja_nome').value.trim();
+    const url = document.getElementById('loja_url').value.trim();
+    if (!nome || !url) { alert('Preencha pelo menos o nome e URL da loja.'); return; }
+  }
+  if (from < state.totalSteps) showStep(from + 1);
+}
+
+function prevStep(from) {
+  if (from > 1) showStep(from - 1);
+}
+
+// ═══ SELEÇÃO ÚNICA ═══
+function singleSelect(el, key, val) {
+  el.closest('.opts-grid').querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  state[key] = val;
+}
+
+function singleSelectRd(el, val) {
+  document.querySelectorAll('.rd-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  state.redesign = val;
+}
+
+// ═══ MULTI WIDGET ═══
+function toggleWidget(el, id) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!state.widgets.includes(id)) state.widgets.push(id);
+  } else {
+    state.widgets = state.widgets.filter(w => w !== id);
+  }
+  document.getElementById('widget-count').textContent = state.widgets.length;
+}
+
+// ═══ PALETA ATÉ 5 CORES ═══
+const MAX_CORES = 5;
+const SLOT_LABELS = ['Principal','Secundária','Cor 3','Cor 4','Cor 5'];
+let slotAtivo = null;
+
+function renderSlots() {
+  var wrap = document.getElementById('paleta-slots');
+  wrap.innerHTML = '';
+
+  state.cores.forEach(function(cor, i) {
+    var div = document.createElement('div');
+    div.className = 'slot' + (slotAtivo === i ? ' ativo' : '');
+    div.setAttribute('onclick', 'abrirSlot(' + i + ')');
+
+    var circle = document.createElement('div');
+    circle.className = 'slot-circle filled' + (slotAtivo === i ? ' ativo' : '');
+    circle.style.background = cor;
+
+    var removeBtn = document.createElement('div');
+    removeBtn.className = 'slot-remove';
+    removeBtn.innerHTML = '&#x2715;';
+    removeBtn.setAttribute('onclick', 'removerCor(event,' + i + ')');
+    circle.appendChild(removeBtn);
+
+    var label = document.createElement('div');
+    label.className = 'slot-label';
+    label.textContent = SLOT_LABELS[i];
+
+    div.appendChild(circle);
+    div.appendChild(label);
+    wrap.appendChild(div);
+  });
+
+  if (state.cores.length < MAX_CORES) {
+    var add = document.createElement('div');
+    add.className = 'slot';
+    add.setAttribute('onclick', 'adicionarSlotVazio()');
+
+    var addCircle = document.createElement('div');
+    addCircle.className = 'slot-add';
+    addCircle.textContent = '+';
+
+    var addLabel = document.createElement('div');
+    addLabel.className = 'slot-label';
+    addLabel.style.color = 'rgba(255,255,255,0.2)';
+    addLabel.textContent = 'Adicionar';
+
+    add.appendChild(addCircle);
+    add.appendChild(addLabel);
+    wrap.appendChild(add);
+  }
+}
+
+function adicionarSlotVazio() {
+  if (state.cores.length >= MAX_CORES) return;
+  state.cores.push('#cccccc');
+  slotAtivo = state.cores.length - 1;
+  renderSlots();
+  abrirPicker('#cccccc');
+}
+
+function abrirSlot(i) {
+  slotAtivo = i;
+  renderSlots();
+  abrirPicker(state.cores[i]);
+}
+
+function abrirPicker(val) {
+  var picker = document.getElementById('hidden-color-picker');
+  picker.value = val || '#cccccc';
+  picker.click();
+}
+
+function onPickerChange(hex) {
+  if (slotAtivo === null) return;
+  state.cores[slotAtivo] = hex;
+  renderSlots();
+}
+
+function removerCor(e, i) {
+  e.stopPropagation();
+  state.cores.splice(i, 1);
+  if (slotAtivo >= state.cores.length) slotAtivo = state.cores.length - 1;
+  if (state.cores.length === 0) slotAtivo = null;
+  renderSlots();
+}
+
+function adicionarCorRapida(hex) {
+  if (state.cores.length < MAX_CORES) {
+    state.cores.push(hex);
+    slotAtivo = null;
+  } else {
+    return;
+  }
+  renderSlots();
+}
+
+function selectPaleta(el, nome) {
+  document.querySelectorAll('.paleta-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  state.paleta = nome;
+}
+
+// ═══ STORAGE HELPERS ═══
+// Usa window.storage se disponível (Vercel), senão localStorage como fallback
+async function saveBriefing(data) {
+  const key = 'briefing:' + Date.now();
+  try {
+    if (window.storage) {
+      await window.storage.set(key, JSON.stringify(data));
+    } else {
+      const existing = JSON.parse(localStorage.getItem('briefings') || '[]');
+      existing.push({ key, data });
+      localStorage.setItem('briefings', JSON.stringify(existing));
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+function loadBriefings() {
+  try {
+    const existing = JSON.parse(localStorage.getItem('briefings') || '[]');
+    return existing.sort((a,b) => b.data.timestamp - a.data.timestamp);
+  } catch(e) { return []; }
+}
+
+// ═══ ENVIAR ═══
+function enviarBriefing() {
+  const g = id => document.getElementById(id)?.value || '';
+
+  const briefing = {
+    timestamp: Date.now(),
+    loja_nome: g('loja_nome'),
+    loja_url: g('loja_url'),
+    loja_whatsapp: g('loja_whatsapp'),
+    loja_instagram: g('loja_instagram'),
+    estilo: state.estilo,
+    paleta: state.paleta,
+    cores: [...state.cores],
+    cor_descricao: g('cor_descricao'),
+    redesign: state.redesign,
+    widgets: [...state.widgets],
+    ref1: g('ref1'),
+    ref2: g('ref2'),
+    ref_obs: g('ref_obs'),
+    observacoes: g('observacoes')
+  };
+
+  // Salvar sem bloquear
+  try {
+    const key = 'briefing:' + Date.now();
+    const existing = JSON.parse(localStorage.getItem('briefings') || '[]');
+    existing.push({ key, data: briefing });
+    localStorage.setItem('briefings', JSON.stringify(existing));
+  } catch(e) {}
+
+  document.getElementById('main-form').style.display = 'none';
+  document.getElementById('sucesso').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+// ═══ ADMIN ═══
+function showAdmin() {
+  document.getElementById('main-form').style.display = 'none';
+  document.getElementById('sucesso').classList.remove('active');
+  document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('admin-gate').classList.add('active');
+}
+
+function showForm() {
+  document.getElementById('admin-gate').classList.remove('active');
+  document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('main-form').style.display = 'block';
+  
+}
+
+function adminLogin() {
+  const senha = document.getElementById('admin-senha').value;
+  if (senha === 'planned2026') {
+    document.getElementById('admin-gate').classList.remove('active');
+    document.getElementById('admin-panel').classList.add('active');
+    renderAdmin();
+  } else {
+    document.getElementById('admin-erro').style.display = 'block';
+  }
+}
+
+function adminLogout() {
+  document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('admin-gate').classList.add('active');
+  document.getElementById('admin-senha').value = '';
+  document.getElementById('admin-erro').style.display = 'none';
+}
+
+const widgetLabels = {
+  barra_marquee:'Barra Animada', carrossel_video:'Vídeos Stories', stories:'Stories',
+  compre_tamanho:'Por Tamanho', compre_marca:'Por Marca', selos_confianca:'Selos',
+  cupom_copiavel:'Cupom', depoimentos:'Depoimentos', barra_beneficios:'Benefícios',
+  brinde_auto:'Brinde', promo_relampago:'Relâmpago', links_rapidos:'Links Rápidos',
+  instagram_feed:'Instagram', newsletter:'Newsletter', audio_boasvindas:'Áudio',
+  popup_cupom:'Pop-up', calculadora:'Calculadora', boas_vindas:'Boas-vindas'
+};
+
+const redesignLabels = { basico:'Layout Essencial', completo:'Completo', premium:'Premium+' };
+const estiloLabels = { dark:'Dark Premium', pastel:'Pastel', clean:'Clean', custom:'Personalizado' };
+
+function renderAdmin() {
+  const briefings = loadBriefings();
+  const list = document.getElementById('briefings-list');
+
+  // Stats
+  document.getElementById('stat-total').textContent = briefings.length;
+  const hoje = briefings.filter(b => {
+    const d = new Date(b.data.timestamp);
+    const n = new Date();
+    return d.toDateString() === n.toDateString();
+  }).length;
+  document.getElementById('stat-hoje').textContent = hoje;
+  const avgW = briefings.length ? Math.round(briefings.reduce((s,b) => s + (b.data.widgets?.length||0), 0) / briefings.length) : 0;
+  document.getElementById('stat-widgets').textContent = avgW;
+
+  if (!briefings.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Nenhum briefing recebido ainda.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = briefings.map(({ data: b }) => {
+    const dt = new Date(b.timestamp);
+    const dtStr = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const wchips = (b.widgets||[]).map(w => `<div class="bc-wchip">${widgetLabels[w]||w}</div>`).join('');
+    return `
+      <div class="briefing-card">
+        <div class="bc-top">
+          <div class="bc-avatar">🏪</div>
+          <div class="bc-info">
+            <h4>${b.loja_nome||'—'}</h4>
+            <small>${dtStr}</small>
+          </div>
+          <div class="bc-meta">
+            <div class="bc-badge" style="background:rgba(168,85,247,0.1);color:var(--purple)">${estiloLabels[b.estilo]||'—'}</div>
+            <div class="bc-badge" style="background:rgba(52,211,153,0.1);color:#34d399">${redesignLabels[b.redesign]||'—'}</div>
+          </div>
+        </div>
+        <div class="bc-details">
+          <div><div class="bc-detail-label">URL</div><div class="bc-detail-val">${b.loja_url||'—'}</div></div>
+          <div><div class="bc-detail-label">WhatsApp</div><div class="bc-detail-val">${b.loja_whatsapp||'—'}</div></div>
+          <div><div class="bc-detail-label">Instagram</div><div class="bc-detail-val">${b.loja_instagram||'—'}</div></div>
+          <div><div class="bc-detail-label">Paleta</div><div class="bc-detail-val">${b.paleta||'—'} ${b.cor_principal?'· '+b.cor_principal:''}</div></div>
+          ${b.ref1?`<div><div class="bc-detail-label">Ref 1</div><div class="bc-detail-val"><a href="${b.ref1}" target="_blank" style="color:var(--purple)">${b.ref1}</a></div></div>`:''}
+          ${b.observacoes?`<div style="grid-column:1/-1"><div class="bc-detail-label">Obs</div><div class="bc-detail-val" style="color:var(--muted)">${b.observacoes}</div></div>`:''}
+        </div>
+        ${wchips ? `<div class="bc-widgets-list">${wchips}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// Init
+updateProgress();
+renderSlots();
+
+// Acesso admin via URL ?admin
+if (window.location.search.includes('admin')) {
+  document.getElementById('main-form').style.display = 'none';
+  document.getElementById('admin-gate').classList.add('active');
+}
+</script>
+</body>
+</html>
