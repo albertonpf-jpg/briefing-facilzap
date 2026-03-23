@@ -810,6 +810,20 @@ body::before {
 /* ── NAV TOP ADMIN LINK ── */
 
 
+
+/* ── CARDS DE WIDGETS NO ADMIN ── */
+.bc-wgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+.bc-wcard { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-sm); overflow:hidden; }
+.bc-wcard-preview { height:76px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--surface); border-bottom:1px solid var(--border); }
+.bc-wcard-name { font-size:10px; font-weight:600; color:var(--muted); padding:6px 8px; text-align:center; }
+
+/* ── VISUAL CARD (estilo/escopo) ── */
+.bc-visual-card { display:flex; gap:14px; align-items:center; }
+.bc-mockup-box { width:90px; height:70px; flex-shrink:0; border-radius:var(--r-sm); overflow:hidden; border:1px solid var(--border); }
+.bc-visual-info {}
+.bc-visual-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.bc-visual-desc { font-size:11px; color:var(--muted); line-height:1.4; }
+
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
@@ -1855,59 +1869,85 @@ function adminLogin() {
   }
 }
 
-function adminLogout() {
-  document.getElementById('admin-panel').classList.remove('active');
-  document.getElementById('admin-gate').classList.add('active');
-  document.getElementById('admin-senha').value = '';
-  document.getElementById('admin-erro').style.display = 'none';
+
+
+// ── ADMIN RENDER COM MOCKUPS VISUAIS ──
+
+// Mini HTML de cada widget (igual ao formulário)
+function widgetPreviewHTML(id) {
+  var p = {
+    barra_marquee: '<div style="width:100%;overflow:hidden;background:linear-gradient(90deg,#7c3aed,#a855f7);height:20px;display:flex;align-items:center"><div style="display:flex;gap:20px;white-space:nowrap;font-size:6.5px;color:#fff;font-weight:600;padding:0 10px;animation:marquee 3s linear infinite">🚚 FRETE GRÁTIS &nbsp; ⭐ AVALIE-NOS &nbsp; 💳 PARCELAMOS &nbsp; 🎁 BRINDE &nbsp; 🚚 FRETE GRÁTIS &nbsp; ⭐ AVALIE-NOS &nbsp; 💳 PARCELAMOS &nbsp; 🎁 BRINDE</div></div>',
+    carrossel_video: '<div style="display:flex;gap:5px;align-items:center;padding:0 8px;height:100%"><div style="width:32px;height:58px;border-radius:5px;background:linear-gradient(170deg,#1e1e2e,#2d1458);border:1.5px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0;box-shadow:0 0 8px rgba(168,85,247,.6)"><span style="font-size:11px">▶</span><div style="width:22px;height:2px;border-radius:2px;background:rgba(255,255,255,.2)"></div></div><div style="width:32px;height:58px;border-radius:5px;background:linear-gradient(170deg,#1e1e2e,#2d1458);border:1.5px solid rgba(168,85,247,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0"><span style="font-size:11px">▶</span><div style="width:22px;height:2px;border-radius:2px;background:rgba(255,255,255,.15)"></div></div><div style="width:32px;height:58px;border-radius:5px;background:linear-gradient(170deg,#1e1e2e,#2d1458);border:1.5px solid rgba(168,85,247,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0;opacity:.6"><span style="font-size:11px">▶</span><div style="width:22px;height:2px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div></div>',
+    stories: '<div style="display:flex;gap:8px;align-items:center;padding:0 10px;height:100%"><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div style="width:30px;height:30px;border-radius:50%;background:conic-gradient(#f59e0b 0deg,#ec4899 120deg,#8b5cf6 240deg,#f59e0b 360deg);padding:2px;display:flex;align-items:center;justify-content:center"><div style="width:100%;height:100%;border-radius:50%;background:#16131f"></div></div><div style="font-size:5px;color:#7c7a8e">Novidades</div></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div style="width:30px;height:30px;border-radius:50%;background:conic-gradient(#f59e0b 0deg,#ec4899 120deg,#8b5cf6 240deg,#f59e0b 360deg);padding:2px;display:flex;align-items:center;justify-content:center"><div style="width:100%;height:100%;border-radius:50%;background:#16131f"></div></div><div style="font-size:5px;color:#7c7a8e">Looks</div></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div style="width:30px;height:30px;border-radius:50%;background:conic-gradient(#f59e0b 0deg,#ec4899 120deg,#8b5cf6 240deg,#f59e0b 360deg);padding:2px;display:flex;align-items:center;justify-content:center"><div style="width:100%;height:100%;border-radius:50%;background:#16131f"></div></div><div style="font-size:5px;color:#7c7a8e">Promos</div></div></div>',
+    compre_tamanho: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="font-size:6.5px;color:#7c7a8e;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Compre por Tamanho</div><div style="display:flex;gap:4px"><div style="padding:3px 7px;border-radius:50px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.1);font-size:7px;font-weight:700;color:#c084fc">PP</div><div style="padding:3px 7px;border-radius:50px;background:#a855f7;font-size:7px;font-weight:700;color:#fff">P</div><div style="padding:3px 7px;border-radius:50px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.1);font-size:7px;font-weight:700;color:#c084fc">M</div><div style="padding:3px 7px;border-radius:50px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.1);font-size:7px;font-weight:700;color:#c084fc">G</div><div style="padding:3px 7px;border-radius:50px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.1);font-size:7px;font-weight:700;color:#c084fc">GG</div></div></div>',
+    compre_marca: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="font-size:6.5px;color:#7c7a8e;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Marcas</div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center"><div style="padding:3px 8px;border-radius:4px;border:1px solid rgba(168,85,247,.4);font-size:7px;font-weight:600;color:#c084fc">Nike</div><div style="padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.1);font-size:7px;font-weight:600;color:#7c7a8e">Adidas</div><div style="padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.1);font-size:7px;font-weight:600;color:#7c7a8e">Puma</div></div></div>',
+    selos_confianca: '<div style="display:flex;gap:8px;align-items:center;justify-content:center;height:100%"><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:15px">🔒</span><span style="font-size:5px;color:#7c7a8e;text-align:center">Compra<br>Segura</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:15px">🚚</span><span style="font-size:5px;color:#7c7a8e;text-align:center">Envio<br>Rápido</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:15px">↩️</span><span style="font-size:5px;color:#7c7a8e;text-align:center">Troca<br>Fácil</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:15px">⭐</span><span style="font-size:5px;color:#7c7a8e;text-align:center">Top<br>Seller</span></div></div>',
+    cupom_copiavel: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="font-size:6px;color:#7c7a8e">Use no checkout ↓</div><div style="display:flex;align-items:center;gap:6px;background:rgba(168,85,247,.12);border:1px dashed rgba(168,85,247,.5);border-radius:5px;padding:5px 10px"><span style="font-size:10px;font-weight:700;color:#c084fc;letter-spacing:.1em">PROMO15</span><span style="font-size:7px;background:#a855f7;color:#fff;border-radius:3px;padding:2px 5px">Copiar</span></div><div style="font-size:6px;color:#7c7a8e">15% na 1ª compra</div></div>',
+    depoimentos: '<div style="display:flex;flex-direction:column;justify-content:center;padding:0 10px;height:100%"><div style="font-size:9px;margin-bottom:3px">⭐⭐⭐⭐⭐</div><div style="font-size:7px;color:#7c7a8e;line-height:1.4;margin-bottom:3px;font-style:italic">"Chegou rápido e a qualidade é incrível!"</div><div style="font-size:6px;color:#a855f7;font-weight:600">— Ana Paula, SP</div></div>',
+    barra_beneficios: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%"><div style="display:flex;gap:8px;align-items:center;background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:5px 10px"><span style="font-size:6px;color:#7c7a8e;display:flex;align-items:center;gap:2px">🚚 Frete Grátis</span><div style="width:1px;height:12px;background:rgba(255,255,255,.07)"></div><span style="font-size:6px;color:#7c7a8e;display:flex;align-items:center;gap:2px">💳 12x sem juros</span><div style="width:1px;height:12px;background:rgba(255,255,255,.07)"></div><span style="font-size:6px;color:#7c7a8e;display:flex;align-items:center;gap:2px">↩️ Troca grátis</span></div></div>',
+    brinde_auto: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:100%"><div style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(168,85,247,.05));border:1px solid rgba(168,85,247,.3);border-radius:6px;padding:6px 12px;text-align:center"><div style="font-size:16px">🎁</div><div style="font-size:6.5px;color:#c084fc;margin-top:2px">Brinde liberado!<br>Acima de R$ 150</div></div></div>',
+    promo_relampago: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:100%"><div style="background:linear-gradient(135deg,#dc2626,#ef4444);border-radius:5px;padding:4px 10px;display:flex;align-items:center;gap:4px"><span style="font-size:9px">⚡</span><span style="font-size:7px;font-weight:700;color:#fff;letter-spacing:.04em">OFERTA RELÂMPAGO</span></div><div style="display:flex;gap:4px"><div style="background:#1e1a2b;border-radius:3px;padding:2px 6px;font-size:9px;font-weight:700;color:#f0ecff;border:1px solid rgba(255,255,255,.07)">02</div><span style="font-size:10px;font-weight:700;color:#7c7a8e">:</span><div style="background:#1e1a2b;border-radius:3px;padding:2px 6px;font-size:9px;font-weight:700;color:#f0ecff;border:1px solid rgba(255,255,255,.07)">47</div><span style="font-size:10px;font-weight:700;color:#7c7a8e">:</span><div style="background:#1e1a2b;border-radius:3px;padding:2px 6px;font-size:9px;font-weight:700;color:#f0ecff;border:1px solid rgba(255,255,255,.07)">13</div></div></div>',
+    links_rapidos: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="display:flex;gap:5px"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 7px"><span style="font-size:11px">👗</span><span style="font-size:5px;color:#7c7a8e">Feminino</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px;background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 7px"><span style="font-size:11px">👟</span><span style="font-size:5px;color:#7c7a8e">Calçados</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px;background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 7px"><span style="font-size:11px">💍</span><span style="font-size:5px;color:#7c7a8e">Acessórios</span></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px;background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 7px"><span style="font-size:11px">🏷️</span><span style="font-size:5px;color:#7c7a8e">Promoções</span></div></div></div>',
+    instagram_feed: '<div style="display:flex;gap:3px;height:100%;padding:6px;align-items:center"><div style="flex:1.5;height:62px;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(236,72,153,.1));border-radius:4px;border:1px solid rgba(168,85,247,.2)"></div><div style="display:flex;flex-direction:column;gap:3px;flex:1"><div style="flex:1;height:29px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.08));border-radius:4px;border:1px solid rgba(168,85,247,.15)"></div><div style="flex:1;height:29px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.08));border-radius:4px;border:1px solid rgba(168,85,247,.15)"></div></div><div style="display:flex;flex-direction:column;gap:3px;flex:1"><div style="flex:1;height:29px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.08));border-radius:4px;border:1px solid rgba(168,85,247,.15)"></div><div style="flex:1;height:29px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.08));border-radius:4px;border:1px solid rgba(168,85,247,.15)"></div></div></div>',
+    newsletter: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="font-size:7px;color:#7c7a8e">Fique por dentro das novidades ✉️</div><div style="display:flex;gap:4px;align-items:center;background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:4px 6px;width:140px"><div style="flex:1;height:10px;background:transparent"></div><div style="background:#a855f7;border-radius:3px;padding:3px 7px;font-size:6.5px;color:#fff;font-weight:600">Cadastrar</div></div></div>',
+    audio_boasvindas: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="font-size:7px;color:#7c7a8e;margin-bottom:2px">Mensagem da dona da loja 🎙️</div><div style="background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:50px;padding:5px 14px;display:flex;align-items:center;gap:6px"><div style="width:18px;height:18px;border-radius:50%;background:#a855f7;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff">▶</div><div style="display:flex;gap:2px;align-items:center"><div style="width:2px;height:6px;border-radius:2px;background:#a855f7"></div><div style="width:2px;height:12px;border-radius:2px;background:#a855f7"></div><div style="width:2px;height:8px;border-radius:2px;background:#a855f7"></div><div style="width:2px;height:14px;border-radius:2px;background:#a855f7"></div><div style="width:2px;height:5px;border-radius:2px;background:#a855f7"></div><div style="width:2px;height:10px;border-radius:2px;background:#a855f7"></div><div style="width:2px;height:7px;border-radius:2px;background:#a855f7"></div></div></div></div>',
+    popup_cupom: '<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:#16131f;border:1px solid rgba(168,85,247,.4);border-radius:8px;padding:8px 12px;text-align:center;box-shadow:0 0 16px rgba(168,85,247,.2);position:relative"><div style="position:absolute;top:3px;right:6px;font-size:8px;color:#7c7a8e">✕</div><div style="font-size:14px;margin-bottom:2px">🛍️</div><div style="font-size:6.5px;color:#f0ecff;font-weight:600;margin-bottom:2px">Bem-vindo! Ganhe 10%</div><div style="font-size:8px;font-weight:700;color:#c084fc;letter-spacing:.1em">DESCONTO10</div></div></div>',
+    calculadora: '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="background:#16131f;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 10px"><div style="display:flex;gap:4px;align-items:center;margin-bottom:3px"><div style="font-size:6px;color:#7c7a8e;width:30px">Tamanho</div><div style="width:30px;height:10px;background:#1e1a2b;border:1px solid rgba(255,255,255,.07);border-radius:3px"></div></div><div style="display:flex;gap:4px;align-items:center"><div style="font-size:6px;color:#7c7a8e;width:30px">Medidas</div><div style="width:30px;height:10px;background:#1e1a2b;border:1px solid rgba(255,255,255,.07);border-radius:3px"></div></div><div style="font-size:7px;color:#34d399;font-weight:700;text-align:center;margin-top:3px">✓ Recomendado: M</div></div></div>',
+    boas_vindas: '<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.08));border:1px solid rgba(168,85,247,.3);border-radius:8px;padding:8px 12px;text-align:center;width:140px"><div style="font-size:14px;margin-bottom:3px">🌟</div><div style="font-size:7px;font-weight:700;color:#f0ecff;margin-bottom:2px">Bem-vinda à nossa loja!</div><div style="font-size:5.5px;color:#7c7a8e;line-height:1.4">Confira nossas novidades e aproveite condições especiais.</div></div></div>'
+  };
+  return p[id] || '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:20px">' + (widgetLabels[id]||id) + '</div>';
 }
 
-const widgetLabels = {
-  barra_marquee:'Barra Animada', carrossel_video:'Vídeos Stories', stories:'Stories',
-  compre_tamanho:'Por Tamanho', compre_marca:'Por Marca', selos_confianca:'Selos',
-  cupom_copiavel:'Cupom', depoimentos:'Depoimentos', barra_beneficios:'Benefícios',
-  brinde_auto:'Brinde', promo_relampago:'Relâmpago', links_rapidos:'Links Rápidos',
-  instagram_feed:'Instagram', newsletter:'Newsletter', audio_boasvindas:'Áudio',
-  popup_cupom:'Pop-up', calculadora:'Calculadora', boas_vindas:'Boas-vindas'
-};
+// Mockup de estilo
+function estiloMockupHTML(estilo) {
+  if (estilo === 'dark') return '<div style="background:#0d0d0d;display:flex;flex-direction:column;padding:6px;gap:4px;height:100%"><div style="height:12px;background:#1a1a1a;border-radius:3px;display:flex;align-items:center;padding:0 5px;gap:3px"><div style="width:5px;height:5px;border-radius:50%;background:#f59e0b"></div><div style="font-size:4px;color:#555">LOJA DARK</div></div><div style="height:32px;background:linear-gradient(135deg,#1a1a1a,#2d2d2d);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:5.5px;color:#f59e0b;font-weight:700;letter-spacing:.05em">✦ COLEÇÃO NOVA ✦</div><div style="display:flex;gap:2px"><div style="flex:1;height:20px;background:#1a1a1a;border-radius:3px;border:1px solid #2a2a2a"></div><div style="flex:1;height:20px;background:#1a1a1a;border-radius:3px;border:1px solid #2a2a2a"></div><div style="flex:1;height:20px;background:#1a1a1a;border-radius:3px;border:1px solid #2a2a2a"></div></div></div>';
+  if (estilo === 'pastel') return '<div style="background:#fff9fc;display:flex;flex-direction:column;padding:6px;gap:4px;height:100%"><div style="height:12px;background:#f9d0e0;border-radius:3px;display:flex;align-items:center;padding:0 5px;gap:2px"><div style="width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#f9a8c9,#e879a8);border:1.5px solid #fff;margin-top:5px"></div><div style="width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#fbbde8,#e879a8);border:1.5px solid #fff;margin-top:5px"></div></div><div style="height:32px;background:linear-gradient(135deg,#fde4ef,#fcc8de);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:5.5px;color:#c06090;font-weight:700">🌸 Nova Coleção</div><div style="display:flex;gap:2px"><div style="flex:1;height:20px;background:#fff;border-radius:3px;border:1px solid #fde4ef"></div><div style="flex:1;height:20px;background:#fff;border-radius:3px;border:1px solid #fde4ef"></div><div style="flex:1;height:20px;background:#fff;border-radius:3px;border:1px solid #fde4ef"></div></div></div>';
+  if (estilo === 'clean') return '<div style="background:#fafafa;display:flex;flex-direction:column;padding:6px;gap:4px;height:100%"><div style="height:12px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;padding:0 5px;gap:3px"><div style="flex:1;height:2px;background:#ddd;border-radius:2px"></div><div style="width:28px;height:2px;background:#ddd;border-radius:2px"></div></div><div style="height:32px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:5.5px;color:#333;font-weight:600;border:1px solid #e0e0e0">Nova Temporada</div><div style="display:flex;gap:2px"><div style="flex:1;height:20px;background:#fff;border-radius:3px;border:1px solid #e8e8e8"></div><div style="flex:1;height:20px;background:#fff;border-radius:3px;border:1px solid #e8e8e8"></div><div style="flex:1;height:20px;background:#fff;border-radius:3px;border:1px solid #e8e8e8"></div></div></div>';
+  return '<div style="background:linear-gradient(135deg,#1a0533,#2d1458);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:100%"><div style="font-size:20px">🎨</div><div style="font-size:6.5px;color:rgba(255,255,255,.6);text-align:center;line-height:1.4">Cores e estilo<br>personalizados</div></div>';
+}
 
-const redesignLabels = { basico:'Layout Essencial', completo:'Completo', premium:'Premium+' };
-const estiloLabels = { dark:'Dark Premium', pastel:'Pastel', clean:'Clean', custom:'Personalizado' };
+// Mockup de escopo
+function escopoMockupHTML(redesign) {
+  var cards = redesign === 'visual'
+    ? '<div style="flex:1;height:24px;background:#1e1a2b;border-radius:2px;border:1px solid rgba(168,85,247,.2)"></div><div style="flex:1;height:24px;background:#1e1a2b;border-radius:2px;border:1px solid rgba(168,85,247,.2)"></div>'
+    : redesign === 'completo'
+    ? '<div style="flex:1;height:24px;background:#1e1a2b;border-radius:2px;border:1px solid rgba(168,85,247,.3);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:2px;gap:1px"><div style="width:16px;height:2px;border-radius:2px;background:#a855f7"></div><div style="width:20px;height:4px;border-radius:2px;background:rgba(168,85,247,.5)"></div></div><div style="flex:1;height:24px;background:#1e1a2b;border-radius:2px;border:1px solid rgba(168,85,247,.3);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:2px;gap:1px"><div style="width:16px;height:2px;border-radius:2px;background:#a855f7"></div><div style="width:20px;height:4px;border-radius:2px;background:rgba(168,85,247,.5)"></div></div>'
+    : '<div style="flex:1;height:24px;background:#1e1a2b;border-radius:2px;border:1px solid rgba(168,85,247,.4);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:2px;gap:1px"><div style="width:16px;height:2px;border-radius:2px;background:#a855f7"></div><div style="width:20px;height:4px;border-radius:2px;background:#a855f7"></div></div><div style="flex:1;height:24px;background:#1e1a2b;border-radius:2px;border:1px solid rgba(168,85,247,.4);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:2px;gap:1px"><div style="width:16px;height:2px;border-radius:2px;background:#a855f7"></div><div style="width:20px;height:4px;border-radius:2px;background:#a855f7"></div></div>';
 
-// ── Ícones e cores por estilo
-const estiloConfig = {
-  dark:   { icon: '🖤', label: 'Dark Premium',   bg: 'rgba(30,20,50,0.8)',   border: 'rgba(168,85,247,0.4)',  text: '#c084fc' },
-  pastel: { icon: '🌸', label: 'Pastel / Feminino', bg: 'rgba(253,228,239,0.12)', border: 'rgba(236,72,153,0.4)', text: '#f9a8d4' },
-  clean:  { icon: '🤍', label: 'Clean / Elegante',  bg: 'rgba(240,240,240,0.08)', border: 'rgba(200,200,200,0.3)', text: '#e2e8f0' },
-  custom: { icon: '✨', label: 'Personalizado',      bg: 'rgba(168,85,247,0.1)',  border: 'rgba(168,85,247,0.4)', text: '#c084fc' }
-};
+  var bannerGrad = redesign === 'premium'
+    ? 'linear-gradient(135deg,rgba(168,85,247,.6),rgba(220,38,38,.2))'
+    : redesign === 'completo'
+    ? 'linear-gradient(135deg,rgba(168,85,247,.5),rgba(139,92,246,.2))'
+    : 'linear-gradient(135deg,rgba(168,85,247,.3),rgba(168,85,247,.1))';
+
+  var headerStyle = redesign === 'premium'
+    ? 'background:linear-gradient(90deg,rgba(168,85,247,.4),rgba(139,92,246,.2))'
+    : 'background:#1e1a2b;border:1px solid rgba(255,255,255,.07)';
+
+  return '<div style="display:flex;flex-direction:column;gap:3px;width:72px">' +
+    '<div style="height:8px;border-radius:2px;' + headerStyle + '"></div>' +
+    '<div style="height:16px;border-radius:2px;background:' + bannerGrad + '"></div>' +
+    '<div style="display:flex;gap:2px">' + cards + '</div>' +
+    (redesign !== 'visual' ? '<div style="height:6px;border-radius:2px;background:#1e1a2b;border:1px solid rgba(255,255,255,.07)"></div>' : '') +
+    '</div>';
+}
 
 const redesignConfig = {
-  visual:   { icon: '🎨', label: 'Só a página inicial',   color: '#a855f7' },
-  completo: { icon: '🛍️', label: 'Home + outras páginas', color: '#34d399' },
-  premium:  { icon: '⚡', label: 'Tudo + widgets',         color: '#f59e0b' }
+  visual:   { label: 'Só a página inicial',   color: '#a855f7' },
+  completo: { label: 'Home + outras páginas', color: '#34d399' },
+  premium:  { label: 'Tudo + widgets',         color: '#f59e0b' }
 };
 
-const widgetEmojis = {
-  barra_marquee:'📢', carrossel_video:'🎬', stories:'📱',
-  compre_tamanho:'👚', compre_marca:'🏷️', selos_confianca:'🛡️',
-  cupom_copiavel:'🎟️', depoimentos:'💬', barra_beneficios:'✅',
-  brinde_auto:'🎁', promo_relampago:'⚡', links_rapidos:'🔗',
-  instagram_feed:'📸', newsletter:'✉️', audio_boasvindas:'🎙️',
-  popup_cupom:'🪟', calculadora:'📏', boas_vindas:'💌'
-};
+const estiloLabels2 = { dark:'Dark Premium', pastel:'Pastel / Feminino', clean:'Clean / Elegante', custom:'Personalizado' };
 
 function renderAdmin() {
   const briefings = loadBriefings();
   const list = document.getElementById('briefings-list');
 
   document.getElementById('stat-total').textContent = briefings.length;
-  const hoje = briefings.filter(b => {
-    const d = new Date(b.data.timestamp);
-    return d.toDateString() === new Date().toDateString();
-  }).length;
+  const hoje = briefings.filter(b => new Date(b.data.timestamp).toDateString() === new Date().toDateString()).length;
   document.getElementById('stat-hoje').textContent = hoje;
-  const avgW = briefings.length ? Math.round(briefings.reduce((s,b) => s + (b.data.widgets?.length||0), 0) / briefings.length) : 0;
+  const avgW = briefings.length ? Math.round(briefings.reduce((s,b) => s+(b.data.widgets?.length||0),0)/briefings.length) : 0;
   document.getElementById('stat-widgets').textContent = avgW;
 
   if (!briefings.length) {
@@ -1919,93 +1959,101 @@ function renderAdmin() {
     var b = item.data;
     var dt = new Date(b.timestamp);
     var dtStr = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    var rc = redesignConfig[b.redesign] || { label: b.redesign||'—', color:'#7c7a8e' };
 
-    // Estilo visual
-    var ec = estiloConfig[b.estilo] || { icon:'🏪', label: b.estilo||'—', bg:'rgba(168,85,247,0.08)', border:'rgba(168,85,247,0.3)', text:'#c084fc' };
+    // ── Bloco Estilo ──
+    var estiloBlock = '';
+    if (b.estilo) {
+      estiloBlock =
+        '<div class="bc-section">' +
+          '<div class="bc-section-label">Estilo Visual escolhido</div>' +
+          '<div class="bc-visual-card">' +
+            '<div class="bc-mockup-box">' + estiloMockupHTML(b.estilo) + '</div>' +
+            '<div class="bc-visual-info">' +
+              '<div class="bc-visual-name">' + (estiloLabels2[b.estilo]||b.estilo) + '</div>' +
+              '<div class="bc-visual-desc">' + ({dark:'Fundo escuro, tons dourados ou neon.',pastel:'Tons suaves, rosa, lilás. Delicado.',clean:'Fundo branco, tipografia refinada.',custom:'Cores personalizadas da marca.'}[b.estilo]||'') + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
 
-    // Redesign
-    var rc = redesignConfig[b.redesign] || { icon:'📋', label: b.redesign||'—', color:'#7c7a8e' };
+    // ── Bloco Escopo ──
+    var escopoBlock = '';
+    if (b.redesign) {
+      escopoBlock =
+        '<div class="bc-section">' +
+          '<div class="bc-section-label">Nível de personalização</div>' +
+          '<div class="bc-visual-card">' +
+            '<div class="bc-mockup-box" style="background:#0e0c14">' + escopoMockupHTML(b.redesign) + '</div>' +
+            '<div class="bc-visual-info">' +
+              '<div class="bc-visual-name" style="color:' + rc.color + '">' + rc.label + '</div>' +
+              '<div class="bc-visual-desc">' + ({visual:'Personalizar apenas a página inicial da loja.',completo:'Personalizar home + páginas de produto e categorias.',premium:'Personalização completa da loja + todos os widgets.'}[b.redesign]||'') + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
 
-    // Cores da paleta
-    var coresHTML = '';
+    // ── Bloco Cores ──
+    var coresBlock = '';
+    var corLabels = ['Principal','Secundária','Cor 3','Cor 4','Cor 5'];
     if (b.cores && b.cores.length) {
-      var corLabels = ['Principal','Secundária','Cor 3','Cor 4','Cor 5'];
-      coresHTML = '<div class="bc-section">';
-      coresHTML += '<div class="bc-section-label">🎨 Cores da marca</div>';
-      coresHTML += '<div class="bc-cores-row">';
-      b.cores.forEach(function(cor, i) {
-        coresHTML += '<div class="bc-cor-item">';
-        coresHTML += '<div class="bc-cor-circle" style="background:' + cor + '"></div>';
-        coresHTML += '<div class="bc-cor-label">' + (corLabels[i]||'Cor '+(i+1)) + '</div>';
-        coresHTML += '<div class="bc-cor-hex">' + cor + '</div>';
-        coresHTML += '</div>';
-      });
-      coresHTML += '</div>';
-      if (b.cor_descricao) {
-        coresHTML += '<div class="bc-cor-desc">"' + b.cor_descricao + '"</div>';
-      }
-      coresHTML += '</div>';
+      var circlesHTML = b.cores.map(function(cor, i) {
+        return '<div class="bc-cor-item">' +
+          '<div class="bc-cor-circle" style="background:' + cor + '"></div>' +
+          '<div class="bc-cor-label">' + (corLabels[i]||'Cor '+(i+1)) + '</div>' +
+          '<div class="bc-cor-hex">' + cor + '</div>' +
+        '</div>';
+      }).join('');
+      coresBlock =
+        '<div class="bc-section">' +
+          '<div class="bc-section-label">Cores da marca</div>' +
+          '<div class="bc-cores-row">' + circlesHTML + '</div>' +
+          (b.cor_descricao ? '<div class="bc-cor-desc">"' + b.cor_descricao + '"</div>' : '') +
+        '</div>';
     } else if (b.cor_descricao) {
-      coresHTML = '<div class="bc-section"><div class="bc-section-label">🎨 Cores da marca</div>';
-      coresHTML += '<div class="bc-cor-desc">"' + b.cor_descricao + '"</div></div>';
+      coresBlock = '<div class="bc-section"><div class="bc-section-label">Cores da marca</div><div class="bc-cor-desc">"' + b.cor_descricao + '"</div></div>';
     }
 
-    // Widgets com emoji
-    var widgetsHTML = '';
+    // ── Bloco Widgets com mockup ──
+    var widgetsBlock = '';
     if (b.widgets && b.widgets.length) {
-      widgetsHTML = '<div class="bc-section">';
-      widgetsHTML += '<div class="bc-section-label">🧩 Widgets solicitados (' + b.widgets.length + ')</div>';
-      widgetsHTML += '<div class="bc-widgets-grid">';
-      b.widgets.forEach(function(w) {
-        var emoji = widgetEmojis[w] || '▪';
-        var label = widgetLabels[w] || w;
-        widgetsHTML += '<div class="bc-widget-item"><span class="bc-widget-emoji">' + emoji + '</span><span>' + label + '</span></div>';
-      });
-      widgetsHTML += '</div></div>';
+      var wcardsHTML = b.widgets.map(function(w) {
+        return '<div class="bc-wcard">' +
+          '<div class="bc-wcard-preview">' + widgetPreviewHTML(w) + '</div>' +
+          '<div class="bc-wcard-name">' + (widgetLabels[w]||w) + '</div>' +
+        '</div>';
+      }).join('');
+      widgetsBlock =
+        '<div class="bc-section">' +
+          '<div class="bc-section-label">Widgets solicitados (' + b.widgets.length + ')</div>' +
+          '<div class="bc-wgrid">' + wcardsHTML + '</div>' +
+        '</div>';
     }
 
-    // Referências
-    var refsHTML = '';
-    if (b.ref1 || b.ref2) {
-      refsHTML = '<div class="bc-section"><div class="bc-section-label">🔗 Referências visuais</div>';
-      if (b.ref1) refsHTML += '<div><a href="' + b.ref1 + '" target="_blank" class="bc-ref-link">' + b.ref1 + '</a></div>';
-      if (b.ref2) refsHTML += '<div><a href="' + b.ref2 + '" target="_blank" class="bc-ref-link">' + b.ref2 + '</a></div>';
-      if (b.ref_obs) refsHTML += '<div class="bc-cor-desc">"' + b.ref_obs + '"</div>';
-      refsHTML += '</div>';
+    // ── Refs e Obs ──
+    var refsBlock = '';
+    if (b.ref1||b.ref2) {
+      refsBlock = '<div class="bc-section"><div class="bc-section-label">Referências visuais</div>';
+      if (b.ref1) refsBlock += '<div><a href="'+b.ref1+'" target="_blank" class="bc-ref-link">'+b.ref1+'</a></div>';
+      if (b.ref2) refsBlock += '<div><a href="'+b.ref2+'" target="_blank" class="bc-ref-link">'+b.ref2+'</a></div>';
+      if (b.ref_obs) refsBlock += '<div class="bc-cor-desc">"'+b.ref_obs+'"</div>';
+      refsBlock += '</div>';
     }
-
-    // Obs
-    var obsHTML = b.observacoes ? '<div class="bc-section"><div class="bc-section-label">📝 Observações</div><div class="bc-obs">' + b.observacoes + '</div></div>' : '';
+    var obsBlock = b.observacoes ? '<div class="bc-section"><div class="bc-section-label">Observações</div><div class="bc-obs">'+b.observacoes+'</div></div>' : '';
 
     return '<div class="briefing-card">' +
-
-      // Header
       '<div class="bc-header">' +
         '<div class="bc-header-left">' +
           '<div class="bc-loja-icon">🏪</div>' +
-          '<div>' +
-            '<div class="bc-loja-nome">' + (b.loja_nome||'Sem nome') + '</div>' +
-            '<div class="bc-loja-data">' + dtStr + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="bc-header-badges">' +
-          '<div class="bc-estilo-badge" style="background:' + ec.bg + ';border:1px solid ' + ec.border + ';color:' + ec.text + '">' + ec.icon + ' ' + ec.label + '</div>' +
-          '<div class="bc-redesign-badge" style="color:' + rc.color + ';border-color:' + rc.color + '33">' + rc.icon + ' ' + rc.label + '</div>' +
+          '<div><div class="bc-loja-nome">'+(b.loja_nome||'Sem nome')+'</div><div class="bc-loja-data">'+dtStr+'</div></div>' +
         '</div>' +
       '</div>' +
-
-      // Contatos
       '<div class="bc-section bc-contatos">' +
-        '<div class="bc-contato-item"><span class="bc-contato-icon">🌐</span><a href="' + (b.loja_url||'#') + '" target="_blank" class="bc-ref-link">' + (b.loja_url||'—') + '</a></div>' +
-        '<div class="bc-contato-item"><span class="bc-contato-icon">📱</span><span>' + (b.loja_whatsapp||'—') + '</span></div>' +
-        '<div class="bc-contato-item"><span class="bc-contato-icon">📸</span><span>' + (b.loja_instagram||'—') + '</span></div>' +
+        '<div class="bc-contato-item"><span class="bc-contato-icon">🌐</span><a href="'+(b.loja_url||'#')+'" target="_blank" class="bc-ref-link">'+(b.loja_url||'—')+'</a></div>' +
+        '<div class="bc-contato-item"><span class="bc-contato-icon">📱</span><span>'+(b.loja_whatsapp||'—')+'</span></div>' +
+        '<div class="bc-contato-item"><span class="bc-contato-icon">📸</span><span>'+(b.loja_instagram||'—')+'</span></div>' +
       '</div>' +
-
-      coresHTML +
-      widgetsHTML +
-      refsHTML +
-      obsHTML +
-
+      estiloBlock + escopoBlock + coresBlock + widgetsBlock + refsBlock + obsBlock +
     '</div>';
   }).join('');
 }
