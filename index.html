@@ -1785,27 +1785,69 @@ function selectPaleta(el, nome) {
   state.paleta = nome;
 }
 
-// ═══ STORAGE HELPERS ═══
-// Usa window.storage se disponível (Vercel), senão localStorage como fallback
+// ═══ STORAGE — SUPABASE ═══
+const SUPA_URL = 'https://uznrpziouttnncozxpvf.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6bnJwemlvdXR0bm5jb3p4cHZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTc1OTQsImV4cCI6MjA5MDEzMzU5NH0.o3DH-R2JsI68BhECBAx-s5pEL6qXqNAgQpPpUq0rzZk';
+
 async function saveBriefing(data) {
-  const key = 'briefing:' + Date.now();
   try {
-    if (window.storage) {
-      await window.storage.set(key, JSON.stringify(data));
-    } else {
-      const existing = JSON.parse(localStorage.getItem('briefings') || '[]');
-      existing.push({ key, data });
-      localStorage.setItem('briefings', JSON.stringify(existing));
-    }
-    return true;
-  } catch(e) { return false; }
+    const res = await fetch(SUPA_URL + '/rest/v1/briefings_facilzap', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        timestamp: data.timestamp,
+        loja_nome: data.loja_nome,
+        loja_url: data.loja_url,
+        loja_whatsapp: data.loja_whatsapp,
+        loja_instagram: data.loja_instagram,
+        estilo: data.estilo,
+        paleta: data.paleta,
+        cores: data.cores,
+        cor_descricao: data.cor_descricao,
+        redesign: data.redesign,
+        widgets: data.widgets,
+        ref1: data.ref1,
+        ref2: data.ref2,
+        ref_obs: data.ref_obs,
+        observacoes: data.observacoes
+      })
+    });
+    return res.ok;
+  } catch(e) {
+    // fallback localStorage
+    try {
+      const ex = JSON.parse(localStorage.getItem('briefings') || '[]');
+      ex.push({ key: 'briefing:' + Date.now(), data });
+      localStorage.setItem('briefings', JSON.stringify(ex));
+    } catch(e2) {}
+    return false;
+  }
 }
 
-function loadBriefings() {
+async function loadBriefings() {
   try {
-    const existing = JSON.parse(localStorage.getItem('briefings') || '[]');
-    return existing.sort((a,b) => b.data.timestamp - a.data.timestamp);
-  } catch(e) { return []; }
+    const res = await fetch(SUPA_URL + '/rest/v1/briefings_facilzap?order=timestamp.desc', {
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY
+      }
+    });
+    if (!res.ok) throw new Error('fetch failed');
+    const rows = await res.json();
+    // Normalizar para o formato { data: {...} } esperado pelo renderAdmin
+    return rows.map(function(r) { return { data: r }; });
+  } catch(e) {
+    // fallback localStorage
+    try {
+      const ex = JSON.parse(localStorage.getItem('briefings') || '[]');
+      return ex.sort((a,b) => (b.data||b).timestamp - (a.data||a).timestamp);
+    } catch(e2) { return []; }
+  }
 }
 
 // ═══ ENVIAR ═══
@@ -1949,8 +1991,8 @@ const redesignConfig = {
 
 const estiloLabels2 = { dark:'Dark Premium', pastel:'Pastel / Feminino', clean:'Clean / Elegante', custom:'Personalizado' };
 
-function renderAdmin() {
-  const briefings = loadBriefings();
+async function renderAdmin() {
+  const briefings = await loadBriefings();
   const list = document.getElementById('briefings-list');
 
   document.getElementById('stat-total').textContent = briefings.length;
