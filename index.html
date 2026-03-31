@@ -1851,7 +1851,7 @@ async function loadBriefings() {
 }
 
 // ═══ ENVIAR ═══
-function enviarBriefing() {
+async function enviarBriefing() {
   const g = id => document.getElementById(id)?.value || '';
 
   const briefing = {
@@ -1872,13 +1872,24 @@ function enviarBriefing() {
     observacoes: g('observacoes')
   };
 
-  // Salvar sem bloquear
+  // Desabilitar botão e mostrar loading
+  const btn = document.querySelector('#step-7 .btn-next');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando... ⏳'; }
+
+  // Salvar no Supabase (obrigatório — antes de mostrar sucesso)
+  const ok = await saveBriefing(briefing);
+
+  // Backup local independente do resultado
   try {
     const key = 'briefing:' + Date.now();
     const existing = JSON.parse(localStorage.getItem('briefings') || '[]');
     existing.push({ key, data: briefing });
     localStorage.setItem('briefings', JSON.stringify(existing));
   } catch(e) {}
+
+  if (!ok) {
+    console.warn('[BriefingFácilZap] Falha no Supabase — backup salvo no localStorage');
+  }
 
   document.getElementById('main-form').style.display = 'none';
   document.getElementById('sucesso').style.display = 'block';
