@@ -1900,12 +1900,12 @@ function showForm() {
   
 }
 
-function adminLogin() {
+async function adminLogin() {
   const senha = document.getElementById('admin-senha').value;
   if (senha === 'planned2026') {
     document.getElementById('admin-gate').classList.remove('active');
     document.getElementById('admin-panel').classList.add('active');
-    renderAdmin();
+    await renderAdmin();
   } else {
     document.getElementById('admin-erro').style.display = 'block';
   }
